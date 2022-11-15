@@ -11,22 +11,22 @@ using UnityEngine.UI;
 
 public class WordleManager : MonoBehaviour
 {
-	[SerializeField] private string Solution;
-	public string Answer;
-	[SerializeField] private TextAsset AllowedWords;
-	[SerializeField] private TextAsset PossibleWords;
-	[SerializeField] private int WordLength = 0;
-	[SerializeField] private List<string> AllowedWordsList;
-	[SerializeField] private List<string> PossibleWordsList;
-	[SerializeField] private List<CharContainer> UIRows;
-	[SerializeField] private List<Char> UIColumns;
+	[SerializeField] private string _solution;
+	[SerializeField] private string _answer;
+	[SerializeField] private TextAsset _allowedWords;
+	[SerializeField] private TextAsset _possibleWords;
+	[SerializeField] private int _wordLength = 0;
+	[SerializeField] private List<string> _allowedWordsList;
+	[SerializeField] private List<string> _possibleWordsList;
+	[SerializeField] private List<CharContainer> _uiRows;
+	[SerializeField] private List<Char> _uiColumns;
 
-	[SerializeField] private string InputString = "";
-	[SerializeField] private int InputCount = 0;
-	[SerializeField] private int CurrentRound = 0;
-	[SerializeField] private int CurrentChar = 0;
+	[SerializeField] private string _inputString = "";
+	[SerializeField] private int _inputCount = 0;
+	[SerializeField] private int _currentRound = 0;
+	[SerializeField] private int _currentChar = 0;
 
-	[SerializeField] private bool Flashing = false;
+	[SerializeField] private bool _flashing = false;
 
 	public KeyCode[] AcceptedKeys =
 	{
@@ -36,22 +36,22 @@ public class WordleManager : MonoBehaviour
 		KeyCode.X, KeyCode.Y, KeyCode.Z
 	};
 
-	[SerializeField] private GameObject Keyboard;
+	[SerializeField] private GameObject _keyboard;
 
-	[SerializeField] private string[] KeyboardKeys =
+	[SerializeField] private string[] _keyboardKeys =
 	{
 		"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C",
 		"V", "B", "N", "M"
 	};
 
-	[SerializeField] private GameObject CurrentUIRow;
-    [SerializeField] private GameObject CurrentUIColumn;
+	[SerializeField] private GameObject _currentUIRow;
+    [SerializeField] private GameObject _currentUIColumn;
 
-    [SerializeField] private GameObject DefeatCanvas; 
-    [SerializeField] private TMP_Text SolutionText;
+    [SerializeField] private GameObject _defeatCanvas; 
+    [SerializeField] private TMP_Text _solutionText;
     
-    [SerializeField] private GameObject WinCanvas; 
-    [SerializeField] private TMP_Text AttemptsText;
+    [SerializeField] private GameObject _winCanvas; 
+    [SerializeField] private TMP_Text _attemptsText;
 
     private void Awake()
     {
@@ -59,44 +59,44 @@ public class WordleManager : MonoBehaviour
 	    UnityEngine.Random.InitState((int) seed);
 	    InitialiseValues();
 	    UpdateRound();
-	    AddWordsToList(AssetDatabase.GetAssetPath(AllowedWords), AllowedWordsList);
-	    AddWordsToList(AssetDatabase.GetAssetPath(PossibleWords), PossibleWordsList);
+	    AddWordsToList(AssetDatabase.GetAssetPath(_allowedWords), _allowedWordsList);
+	    AddWordsToList(AssetDatabase.GetAssetPath(_possibleWords), _possibleWordsList);
 	    PickRandomWord();
-	    CurrentUIRow = UIRows[CurrentRound].gameObject;
-	    CurrentUIColumn = UIColumns[CurrentChar].gameObject;
+	    _currentUIRow = _uiRows[_currentRound].gameObject;
+	    _currentUIColumn = _uiColumns[_currentChar].gameObject;
 	    SetKeyBoardKeys();
 	    
-	    foreach (var _char in UIColumns)
+	    foreach (var @char in _uiColumns)
 	    {
-		    _char.GetComponent<Animator>().enabled = true;
+		    @char.GetComponent<Animator>().enabled = true;
 	    }
     }
 
     private void InitialiseValues()
     {
-		InputString = "";
-		WordLength = 0;
-		InputCount = 0;
-		CurrentRound = 0;
-		CurrentChar = 0;
+		_inputString = "";
+		_wordLength = 0;
+		_inputCount = 0;
+		_currentRound = 0;
+		_currentChar = 0;
     }
 
     private void OnValidate()
     {
-	    UIRows = GetComponentsInChildren<CharContainer>().ToList();
-	    UIColumns = GetComponentsInChildren<Char>().ToList();
+	    _uiRows = GetComponentsInChildren<CharContainer>().ToList();
+	    _uiColumns = GetComponentsInChildren<Char>().ToList();
     }
 
     [ContextMenu("Set Keyboard Keys")]
     private void SetKeyBoardKeys()
     {
-	    var keyboardKeys = Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Typeable).ToList();
+	    var keyboardKeys = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Typeable).ToList();
 
 	    for (int i = 0; i < keyboardKeys.Count; i++)
 	    {
 		    var key = keyboardKeys[i];
 		    
-		    key.Key = KeyboardKeys[i];
+		    key.Key = _keyboardKeys[i];
 			    
 		    var textComponent = key.GetComponentInChildren<TMP_Text>();
         
@@ -106,16 +106,16 @@ public class WordleManager : MonoBehaviour
 		    }
 	    }
 
-	    var backSpaceKey = Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == "Backspace").ToList();
+	    var backSpaceKey = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == "Backspace").ToList();
 	    backSpaceKey[0].GetComponentInChildren<TMP_Text>().text = "<-";
 	    
-	    var enterKey = Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == "Enter").ToList();
+	    var enterKey = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == "Enter").ToList();
 	    enterKey[0].GetComponentInChildren<TMP_Text>().text = "Go";
     }
 
     private void Update()
     {
-	    if (WordLength > -1 && WordLength <= 4)
+	    if (_wordLength > -1 && _wordLength <= 4)
 	    {
 		    var key = ReadKeyInput();
 		    
@@ -135,7 +135,7 @@ public class WordleManager : MonoBehaviour
 
 	    if (Input.GetKeyDown(KeyCode.Return))
 	    {
-		    if (Solution != "")
+		    if (_solution != "")
 		    {
 			    CheckAnswer();   
 		    }
@@ -151,16 +151,16 @@ public class WordleManager : MonoBehaviour
 
     public void DeleteLastChar()
     {
-	    if (Answer.Length >= 1)
+	    if (_answer.Length >= 1)
 	    {
-		    Answer = Answer.Substring(0, Answer.Length - 1);
-		    CurrentChar--;
-		    WordLength--;
+		    _answer = _answer.Substring(0, _answer.Length - 1);
+		    _currentChar--;
+		    _wordLength--;
 
-		    var chars = CurrentUIRow.GetComponentsInChildren<Char>();
-		    CurrentUIColumn = chars[CurrentChar].gameObject;
+		    var chars = _currentUIRow.GetComponentsInChildren<Char>();
+		    _currentUIColumn = chars[_currentChar].gameObject;
 		    
-		    CurrentUIColumn.GetComponentInChildren<TMP_Text>().text = "";
+		    _currentUIColumn.GetComponentInChildren<TMP_Text>().text = "";
 	    }
     }
 
@@ -168,22 +168,22 @@ public class WordleManager : MonoBehaviour
     {
 	    var s = key;
 	    Debug.Log("typing " + key);
-	    InputString = s;
+	    _inputString = s;
 
-	    var chars = CurrentUIRow.GetComponentsInChildren<Char>();
-	    CurrentUIColumn = chars[CurrentChar].gameObject;
+	    var chars = _currentUIRow.GetComponentsInChildren<Char>();
+	    _currentUIColumn = chars[_currentChar].gameObject;
 	    
-	    CurrentUIColumn.GetComponentInChildren<TMP_Text>().text = s;
-	    Answer += InputString;
-	    CurrentChar++;
-	    WordLength++;
-	    InputString = "";
+	    _currentUIColumn.GetComponentInChildren<TMP_Text>().text = s;
+	    _answer += _inputString;
+	    _currentChar++;
+	    _wordLength++;
+	    _inputString = "";
 	    
-	    if (!AllowedWordsList.Contains(Answer.ToLower()))
+	    if (!_allowedWordsList.Contains(_answer.ToLower()))
 	    {
-		    for (int i = 0; i < Answer.Length; i++)
+		    for (int i = 0; i < _answer.Length; i++)
 		    {
-			    if (Answer.Length == 5)
+			    if (_answer.Length == 5)
 			    {
 				    var currentPanel = chars[i].gameObject;
 				    
@@ -198,39 +198,39 @@ public class WordleManager : MonoBehaviour
 
     public void CheckAnswer()
     {
-	    if (AllowedWordsList.Contains(Answer.ToLower()))
+	    if (_allowedWordsList.Contains(_answer.ToLower()))
 	    {
 		    Debug.Log("valid answer");
 		    
 		    var correctCount = 0;
 	    
-		    for (int i = 0; i < Answer.Length; i++)
+		    for (int i = 0; i < _answer.Length; i++)
 		    {
-			    if (Answer.Length == 5)
+			    if (_answer.Length == 5)
 			    {
-				    CurrentUIColumn = CurrentUIRow.GetComponentsInChildren<Char>()[i].gameObject;
+				    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[i].gameObject;
 				    
 				    //get keyboard letter to light up
 				    
-				    GameObject currentKeyboardLetter = Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == Answer[i].ToString()).ToList()[0].gameObject;
+				    GameObject currentKeyboardLetter = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == _answer[i].ToString()).ToList()[0].gameObject;
 				    
 				    Debug.Log(currentKeyboardLetter);
 				    
-				    var currentColumnImage = CurrentUIColumn.GetComponentInChildren<Image>();
-				    var currentColumnText = CurrentUIColumn.GetComponentInChildren<TMP_Text>();
+				    var currentColumnImage = _currentUIColumn.GetComponentInChildren<Image>();
+				    var currentColumnText = _currentUIColumn.GetComponentInChildren<TMP_Text>();
 				    
 				    var currentKeyboardLetterImage = currentKeyboardLetter.GetComponentInChildren<Image>();
 				    var currentKeyboardLetterText = currentKeyboardLetter.GetComponentInChildren<TMP_Text>();
 				    
-				    var chars = CurrentUIRow.GetComponentsInChildren<Char>();
+				    var chars = _currentUIRow.GetComponentsInChildren<Char>();
 				    
-				    var charAnim = CurrentUIColumn.GetComponent<Animator>();
+				    var charAnim = _currentUIColumn.GetComponent<Animator>();
 				    
-				    CurrentUIColumn = chars[i].gameObject;
+				    _currentUIColumn = chars[i].gameObject;
 					    
-				    Debug.Log(CurrentUIColumn);
+				    Debug.Log(_currentUIColumn);
 
-				    if (Answer[i].ToString().ToLower() == Solution[i].ToString().ToLower())
+				    if (_answer[i].ToString().ToLower() == _solution[i].ToString().ToLower())
 				    {
 					    // we need to disable the animator to change colours because if we don't it overrides the colour change...
 					    
@@ -249,7 +249,7 @@ public class WordleManager : MonoBehaviour
 					    Debug.Log("green " + i);
 				    }
 				    
-				    else if (Answer[i].ToString().ToLower() != Solution[i].ToString().ToLower() && Solution.ToLower().Contains(Answer[i].ToString().ToLower()))
+				    else if (_answer[i].ToString().ToLower() != _solution[i].ToString().ToLower() && _solution.ToLower().Contains(_answer[i].ToString().ToLower()))
 				    {
 					    // we need to disable the animator to change colours because if we don't it overrides the colour change...
 
@@ -267,7 +267,7 @@ public class WordleManager : MonoBehaviour
 					    Debug.Log("YELLOW " + i);
 				    }
 				    
-				    else if (!Solution.ToLower().Contains(Answer[i].ToString().ToLower()))
+				    else if (!_solution.ToLower().Contains(_answer[i].ToString().ToLower()))
 				    {
 					    // we need to disable the animator to change colours because if we don't it overrides the colour change...
 					    
@@ -289,21 +289,21 @@ public class WordleManager : MonoBehaviour
 		    if (correctCount == 5)
 		    {
 			    Debug.Log("Winner");
-			    WinCanvas.SetActive(true);
-			    AttemptsText.text = (CurrentRound + 1).ToString() + " attempts";
+			    _winCanvas.SetActive(true);
+			    _attemptsText.text = (_currentRound + 1).ToString() + " attempts";
 		    }
 		    else
 		    {
-			    if (CurrentRound < 4)
+			    if (_currentRound < 4)
 			    {
-				    CurrentRound++;
+				    _currentRound++;
 				    UpdateRound();   
 			    }
 			    else
 			    {
 				    Debug.Log("Loser");
-				    DefeatCanvas.SetActive(true);
-				    SolutionText.text = Solution.ToUpper();
+				    _defeatCanvas.SetActive(true);
+				    _solutionText.text = _solution.ToUpper();
 				    //show defeat canvas
 			    }
 		    }
@@ -312,12 +312,12 @@ public class WordleManager : MonoBehaviour
 
     void UpdateRound()
     {
-	    InputString = "";
-	    Answer = "";
-	    WordLength = 0;
-	    CurrentChar = 0;
-	    CurrentUIRow = UIRows[CurrentRound].gameObject;
-	    CurrentUIColumn = CurrentUIRow.GetComponentsInChildren<Char>()[CurrentChar].gameObject;
+	    _inputString = "";
+	    _answer = "";
+	    _wordLength = 0;
+	    _currentChar = 0;
+	    _currentUIRow = _uiRows[_currentRound].gameObject;
+	    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[_currentChar].gameObject;
 	    //current_char_name = "Container/WordsContainer/Label" + str(current_round) + "/Char"
     }
 
@@ -338,8 +338,8 @@ public class WordleManager : MonoBehaviour
 
     void PickRandomWord()
     {
-	    var num = UnityEngine.Random.Range(0, PossibleWordsList.Count - 1);
-	    Solution = PossibleWordsList[num];
+	    var num = UnityEngine.Random.Range(0, _possibleWordsList.Count - 1);
+	    _solution = _possibleWordsList[num];
     }
 
     private KeyCode ReadKeyInput()

@@ -4779,20 +4779,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd9520a6ecbce8f40be8017119ac648b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Solution: 
-  Answer: 
-  AllowedWords: {fileID: 4900000, guid: c2b76792a77796141b613d3e6319bf5a, type: 3}
-  PossibleWords: {fileID: 4900000, guid: 534e20bbcf600194e8247c038395e95d, type: 3}
-  WordLength: 0
-  AllowedWordsList: []
-  PossibleWordsList: []
-  UIRows:
+  _solution: 
+  _answer: 
+  _allowedWords: {fileID: 4900000, guid: c2b76792a77796141b613d3e6319bf5a, type: 3}
+  _possibleWords: {fileID: 4900000, guid: 534e20bbcf600194e8247c038395e95d, type: 3}
+  _wordLength: 0
+  _allowedWordsList: []
+  _possibleWordsList: []
+  _uiRows:
   - {fileID: 311940194}
   - {fileID: 817785034}
   - {fileID: 17277114}
   - {fileID: 463100846}
   - {fileID: 1321842044}
-  UIColumns:
+  _uiColumns:
   - {fileID: 538151353}
   - {fileID: 1917423429}
   - {fileID: 403453456}
@@ -4818,14 +4818,14 @@ MonoBehaviour:
   - {fileID: 1711788983}
   - {fileID: 1178902650}
   - {fileID: 1575816508}
-  InputString: 
-  InputCount: 0
-  CurrentRound: 0
-  CurrentChar: 0
-  Flashing: 0
+  _inputString: 
+  _inputCount: 0
+  _currentRound: 0
+  _currentChar: 0
+  _flashing: 0
   AcceptedKeys: 6100000062000000630000006400000065000000660000006700000068000000690000006a0000006b0000006c0000006d0000006e0000006f000000700000007100000072000000730000007400000075000000760000007700000078000000790000007a000000
-  Keyboard: {fileID: 1732173877}
-  KeyboardKeys:
+  _keyboard: {fileID: 1732173877}
+  _keyboardKeys:
   - Q
   - W
   - E
@@ -4852,12 +4852,12 @@ MonoBehaviour:
   - B
   - N
   - M
-  CurrentUIRow: {fileID: 0}
-  CurrentUIColumn: {fileID: 0}
-  DefeatCanvas: {fileID: 1460465900}
-  SolutionText: {fileID: 134281543}
-  WinCanvas: {fileID: 1594661397}
-  AttemptsText: {fileID: 1379349502}
+  _currentUIRow: {fileID: 0}
+  _currentUIColumn: {fileID: 0}
+  _defeatCanvas: {fileID: 1460465900}
+  _solutionText: {fileID: 134281543}
+  _winCanvas: {fileID: 1594661397}
+  _attemptsText: {fileID: 1379349502}
 --- !u!1001 &1119849851
 PrefabInstance:
   m_ObjectHideFlags: 0
