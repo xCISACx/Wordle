@@ -51,21 +51,21 @@ public class Char : MonoBehaviour
         {
             case TileState.Correct:
 
-                GetComponent<Animator>().enabled = false;
+                //GetComponent<Animator>().enabled = false;
                 Image.color = _correctColour;
                 Text.color = Color.white;
                 break;
             
             case TileState.Incorrect:
                 
-                GetComponent<Animator>().enabled = false;
+                //GetComponent<Animator>().enabled = false;
                 Image.color = _incorrectColour;
                 Text.color = Color.white;
                 break;
             
             case TileState.WrongPlace:
                 
-                GetComponent<Animator>().enabled = false;
+                //GetComponent<Animator>().enabled = false;
                 Image.color = _wrongPlaceColour;
                 Text.color = Color.white;
                 break;
