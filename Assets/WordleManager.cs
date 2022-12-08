@@ -27,11 +27,8 @@ public class WordleManager : MonoBehaviour
 	[SerializeField] private string _solution;
 	[SerializeField] private string _answer;
 	[SerializeField] private int _wordLength;
-	[SerializeField] private List<string> _allowedWordsList;
-	[SerializeField] private List<string> _possibleWordsList;
 	[SerializeField] private HashSet<string> _possibleWordsHashSet = new HashSet<string>();
 	[SerializeField] private HashSet<string> _allowedWordsHashSet = new HashSet<string>();
-	[SerializeField] private List<string> _guessedLettersList;
 	[SerializeField] private List<CharContainer> _uiRows;
 	[SerializeField] private List<Char> _uiColumns;
 
@@ -74,25 +71,18 @@ public class WordleManager : MonoBehaviour
 	    
 	    InitialiseValues();
 	    UpdateRound();
-	    
-	    //AddWordsToList("AllowedWords", _allowedWordsList);
 
-	    //AddWordsToList("PossibleWords", _possibleWordsList);
-	    
 	    AddWordsToHashSet("AllowedWords", _allowedWordsHashSet);
 	    
 	    AddWordsToHashSet("PossibleWords", _possibleWordsHashSet);
 	    
-	    Debug.Log(_possibleWordsHashSet.Count);
-	    Debug.Log(_allowedWordsHashSet.Count);
+	    //Debug.Log(_possibleWordsHashSet.Count);
+	    //Debug.Log(_allowedWordsHashSet.Count);
 	    
 	    PickRandomWord();
 	    
 	    _currentUIRow = _uiRows[_currentRound].gameObject;
 	    _currentUIColumn = _uiColumns[_currentChar].gameObject;
-
-	    /*InitFrequencyDictionary(_guessLetterFrequencyDictionary);
-	    InitFrequencyDictionary(_solutionLetterFrequencyDictionary);*/
 
 	    InputManager = GetComponent<InputManager>();
 	    
@@ -141,7 +131,7 @@ public class WordleManager : MonoBehaviour
 		    }
 		    else
 		    {
-			    Debug.Log("no solution");
+			    //Debug.Log("no solution");
 		    }
 	    }
     }
@@ -172,8 +162,7 @@ public class WordleManager : MonoBehaviour
 		    var currentPanelImage = currentPanel.GetComponentInChildren<Image>();
 			    
 		    currentPanelImage.color = color;
-		    Debug.Log("reset tile " + i + "'s colour");
-		    //currentPanel.GetComponent<RectTransform>().anchoredPosition = currentPanel.GetComponent<Char>().DefaultPosition;
+		    //Debug.Log("reset tile " + i + "'s colour");
 	    }
     }
 
@@ -219,10 +208,9 @@ public class WordleManager : MonoBehaviour
     {
 	    if (_allowedWordsHashSet.Contains(_answer))
 	    {
-		    Debug.Log("valid answer");
+		    //Debug.Log("valid answer");
 		    
 		    var correctCount = 0;
-		    _guessedLettersList.Clear();
 
 		    UpdateFrequencyDictionary(_guessLetterFrequencyDictionary, _answer);
 
@@ -232,11 +220,6 @@ public class WordleManager : MonoBehaviour
 			    
 			    for (int i = 0; i < _answer.Length; i++)
 			    {
-				    if (!_guessedLettersList.Contains(_answer[i].ToString()))
-				    {
-					    _guessedLettersList.Add(_answer[i].ToString());
-				    }
-				    
 				    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[i].gameObject;
 				    
 				    //get keyboard letter to light up
@@ -244,7 +227,7 @@ public class WordleManager : MonoBehaviour
 				    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(_answer, i);
 				    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
 				    
-				    Debug.Log(currentKeyboardLetter);
+				    //Debug.Log(currentKeyboardLetter);
 
 				    var chars = _currentUIRow.GetComponentsInChildren<Char>();
 				    
@@ -265,7 +248,7 @@ public class WordleManager : MonoBehaviour
 					    
 					    correctCount++;
 
-					    Debug.Log("green " + i);
+					    //Debug.Log("green " + i);
 				    }
 
 				    // if the current letter does not match the position of the same letter in the solution and does not exist in the solution
@@ -275,7 +258,7 @@ public class WordleManager : MonoBehaviour
 					    currentKeyboardKey.state = KeyboardKey.tileState.Incorrect;
 					    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Incorrect;
 					    
-					    Debug.Log("grey " + i);
+					    //Debug.Log("grey " + i);
 				    }
 			    }
 
@@ -306,7 +289,7 @@ public class WordleManager : MonoBehaviour
 							    _remaining = _remaining.Insert(index, " ");
 							    currentChar.State = Char.TileState.WrongPlace;
 							    
-							    Debug.Log("yellow " + j);
+							    //Debug.Log("yellow " + j);
 							    
 							    multipleCount = true;
 						    }
@@ -317,13 +300,13 @@ public class WordleManager : MonoBehaviour
 							    {
 								    currentChar.State = Char.TileState.WrongPlace;
 								    
-								    Debug.Log("YELLOW LAST " + j);
+								    //Debug.Log("YELLOW LAST " + j);
 							    }
 							    else
 							    {
 								    currentChar.State = Char.TileState.Incorrect;
 
-								    Debug.Log("grey LAST " + j);   
+								    //Debug.Log("grey LAST " + j);   
 							    }
 						    }
 						    
@@ -341,7 +324,7 @@ public class WordleManager : MonoBehaviour
 									    // we already have an instance of that letter that is correct, so mark all others as incorrect
 									    newCurrentCharJ.State = Char.TileState.Incorrect;
 									    
-									    Debug.Log("There's already another instance of " + _answer[j] + " that is in the right place so all others are incorrect");
+									    //Debug.Log("There's already another instance of " + _answer[j] + " that is in the right place so all others are incorrect");
 								    }
 							    }
 						    }
@@ -350,24 +333,24 @@ public class WordleManager : MonoBehaviour
 						    {
 							    currentKeyboardKey.state = KeyboardKey.tileState.WrongPlace;
 
-							    Debug.Log("Making keyboard " + _answer[j] + " YELLOW since it's not green");
+							    //Debug.Log("Making keyboard " + _answer[j] + " YELLOW since it's not green");
 						    }
 					    }
 					    else
 					    {
 						    currentChar.State = Char.TileState.Incorrect;
 
-						    Debug.Log("grey LAST " + j);
+						    //Debug.Log("grey LAST " + j);
 					    }
 				    }
 			    }
 		    }
 
-		    Debug.Log("correct letters: " + correctCount);
+		    //Debug.Log("correct letters: " + correctCount);
 
 		    if (correctCount == 5)
 		    {
-			    Debug.Log("Winner");
+			    //Debug.Log("Winner");
 			    _winCanvas.SetActive(true);
 			    _solutionTextWin.text = _solution.ToUpper();
 			    _attemptsText.text = (_currentRound + 1) + " attempt(s)";
@@ -381,7 +364,7 @@ public class WordleManager : MonoBehaviour
 			    }
 			    else
 			    {
-				    Debug.Log("Loser");
+				    //Debug.Log("Loser");
 				    _defeatCanvas.SetActive(true);
 				    _solutionTextLose.text = _solution.ToUpper();
 				    //show defeat canvas
@@ -397,25 +380,15 @@ public class WordleManager : MonoBehaviour
 
     private void PunchTarget(Transform target, Vector3 force, float duration)
     {
-	    //var punchTween = new DOTween();
-	    //target.DOPunchPosition(force, duration).OnComplete( () => ResetPunch(target));
 	    target.DOPunchPosition(force, duration).OnComplete( () => target.DORewind());
-	    
     }
     
     private void ShakeTarget(Transform target, Vector3 force, float duration)
     {
-	    //var punchTween = new DOTween();
 	    target.DOShakePosition(duration, force, 10, 0f)
 		    .SetRecyclable(true)
 		    .SetAutoKill(false)
 		    .OnComplete( () => target.DORewind());
-	    /*target.DOShakeRotation(duration, force, 100, 0f)
-		    .SetRecyclable(true)
-		    .SetAutoKill(false)
-		    .OnComplete( () => target.DORewind());*/
-
-	    //DOTween.Sequence().Append(target.DORotate(force, duration, RotateMode.WorldAxisAdd)).Append(target.DORotate(-force, duration, RotateMode.WorldAxisAdd)).SetLoops(RotationLoops);
     }
 
     void UpdateRound()
@@ -428,30 +401,6 @@ public class WordleManager : MonoBehaviour
 	    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[_currentChar].gameObject;
     }
 
-    void AddWordsToList(string path, List<string> list)
-    {
-	    var file = Resources.Load<TextAsset>(path);
-
-	    var fileContent = file.text;
-
-	#if UNITY_WEBGL
-
-	    var fileWords = fileContent.Split("\r\n");
-	    
-	#endif
-
-	#if !UNITY_WEBGL
-	
-		  var fileWords = fileContent.Split(Environment.NewLine);
-	    
-	#endif
-
-	    foreach (var word in fileWords)
-	    {
-		    list.Add(word.ToUpper());
-	    }
-    }
-    
     void AddWordsToHashSet(string path, HashSet<string> set)
     {
 	    var file = Resources.Load<TextAsset>(path);
@@ -480,7 +429,6 @@ public class WordleManager : MonoBehaviour
     {
 	    var num = UnityEngine.Random.Range(0, _possibleWordsHashSet.Count - 1);
 	    _solution = _possibleWordsHashSet.ElementAt(num);
-	    //_solution = _possibleWordsList[num];
     }
 
     private KeyCode ReadKeyInput()
@@ -511,10 +459,10 @@ public class WordleManager : MonoBehaviour
 
 	    foreach (var pair in _solutionLetterFrequencyDictionary)
 	    {
-		    Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
+		    //Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
 	    }
 
-	    Debug.Log("init solution frequency");
+	    //Debug.Log("init solution frequency");
     }
 
     [ContextMenu("Update Solution Frequency UI")]
@@ -529,16 +477,16 @@ public class WordleManager : MonoBehaviour
 
 	    foreach (var letter in _solution)
 	    {
-		    Debug.Log( _solutionLetterFrequencyDictionary[letter.ToString()]);
+		    //Debug.Log( _solutionLetterFrequencyDictionary[letter.ToString()]);
 		    _solutionLetterFrequencyDictionary[letter.ToString()] += 1;
 	    }
 
 	    foreach (var pair in _solutionLetterFrequencyDictionary)
 	    {
-		    Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
+		    //Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
 	    }
 	    
-	    Debug.Log("updated solution frequency");
+	    //Debug.Log("updated solution frequency");
     }
     
     void UpdateFrequencyDictionary(Dictionary<string, int> dictionary, string word)
@@ -552,16 +500,16 @@ public class WordleManager : MonoBehaviour
 
 	    foreach (var letter in word)
 	    {
-		    Debug.Log( dictionary[letter.ToString()]);
+		    //Debug.Log( dictionary[letter.ToString()]);
 		    dictionary[letter.ToString()] += 1;
 	    }
 
 	    foreach (var pair in dictionary)
 	    {
-		    Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
+		    //Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
 	    }
 	    
-	    Debug.Log("updated frequency of " + dictionary.GetType().GetProperty(name));
+	    //Debug.Log("updated frequency of " + dictionary.GetType().GetProperty(name));
     }
 
     public void RestartGame()
