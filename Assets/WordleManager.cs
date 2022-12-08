@@ -29,6 +29,8 @@ public class WordleManager : MonoBehaviour
 	[SerializeField] private int _wordLength;
 	[SerializeField] private List<string> _allowedWordsList;
 	[SerializeField] private List<string> _possibleWordsList;
+	[SerializeField] private HashSet<string> _possibleWordsHashSet = new HashSet<string>();
+	[SerializeField] private HashSet<string> _allowedWordsHashSet = new HashSet<string>();
 	[SerializeField] private List<string> _guessedLettersList;
 	[SerializeField] private List<CharContainer> _uiRows;
 	[SerializeField] private List<Char> _uiColumns;
@@ -73,9 +75,16 @@ public class WordleManager : MonoBehaviour
 	    InitialiseValues();
 	    UpdateRound();
 	    
-	    AddWordsToList("AllowedWords", _allowedWordsList);
+	    //AddWordsToList("AllowedWords", _allowedWordsList);
 
-	    AddWordsToList("PossibleWords", _possibleWordsList);
+	    //AddWordsToList("PossibleWords", _possibleWordsList);
+	    
+	    AddWordsToHashSet("AllowedWords", _allowedWordsHashSet);
+	    
+	    AddWordsToHashSet("PossibleWords", _possibleWordsHashSet);
+	    
+	    Debug.Log(_possibleWordsHashSet.Count);
+	    Debug.Log(_allowedWordsHashSet.Count);
 	    
 	    PickRandomWord();
 	    
@@ -190,7 +199,7 @@ public class WordleManager : MonoBehaviour
 		    PunchTarget(_currentUIColumn.transform, PunchForce, PunchDuration);
 	    }
 
-	    if (!_allowedWordsList.Contains(_answer))
+	    if (!_allowedWordsHashSet.Contains(_answer))
 	    {
 		    for (int i = 0; i < _answer.Length; i++)
 		    {
@@ -208,7 +217,7 @@ public class WordleManager : MonoBehaviour
 
     public void CheckAnswer()
     {
-	    if (_allowedWordsList.Contains(_answer))
+	    if (_allowedWordsHashSet.Contains(_answer))
 	    {
 		    Debug.Log("valid answer");
 		    
@@ -442,11 +451,36 @@ public class WordleManager : MonoBehaviour
 		    list.Add(word.ToUpper());
 	    }
     }
+    
+    void AddWordsToHashSet(string path, HashSet<string> set)
+    {
+	    var file = Resources.Load<TextAsset>(path);
+
+	    var fileContent = file.text;
+
+#if UNITY_WEBGL
+
+	    var fileWords = fileContent.Split("\r\n");
+	    
+#endif
+
+#if !UNITY_WEBGL
+	
+		  var fileWords = fileContent.Split(Environment.NewLine);
+	    
+#endif
+
+	    foreach (var word in fileWords)
+	    {
+		    set.Add(word.ToUpper());
+	    }
+    }
 
     void PickRandomWord()
     {
-	    var num = UnityEngine.Random.Range(0, _possibleWordsList.Count - 1);
-	    _solution = _possibleWordsList[num];
+	    var num = UnityEngine.Random.Range(0, _possibleWordsHashSet.Count - 1);
+	    _solution = _possibleWordsHashSet.ElementAt(num);
+	    //_solution = _possibleWordsList[num];
     }
 
     private KeyCode ReadKeyInput()
