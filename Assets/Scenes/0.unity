@@ -782,6 +782,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &204178273
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1679,6 +1683,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &406916765
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2706,6 +2714,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &548540703
 GameObject:
   m_ObjectHideFlags: 0
@@ -4865,6 +4877,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1057841117 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -4892,6 +4908,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1093956920 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -5012,6 +5032,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1107001232
 GameObject:
   m_ObjectHideFlags: 0
@@ -5128,6 +5152,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd9520a6ecbce8f40be8017119ac648b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultColour: {r: 0.22745098, g: 0.22745098, b: 0.22745098, a: 1}
+  CorrectColour: {r: 0.0627451, g: 0.83137256, b: 0.27058825, a: 1}
+  WrongPlaceColour: {r: 0.9137255, g: 0.8980392, b: 0.27450982, a: 1}
+  IncorrectColour: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}
   _solution: MUSHY
   _answer: 
   _wordLength: 0
@@ -5213,7 +5241,7 @@ MonoBehaviour:
   _solutionTextLose: {fileID: 134281543}
   _winCanvas: {fileID: 1594661397}
   _attemptsText: {fileID: 1379349502}
-  _previousLetters: []
+  remaining: 
 --- !u!1001 &1119849851
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5329,6 +5357,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1129353473
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5444,6 +5476,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1158251368
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5567,6 +5603,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1182328989
 GameObject:
   m_ObjectHideFlags: 0
@@ -5928,6 +5968,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1260998762 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -6056,6 +6100,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1306810145
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6297,6 +6345,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1321842041
 GameObject:
   m_ObjectHideFlags: 0
@@ -6493,6 +6545,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1369553478 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -7335,6 +7391,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1460465900
 GameObject:
   m_ObjectHideFlags: 0
@@ -7846,6 +7906,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1583933439
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8067,6 +8131,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1611305942
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8497,6 +8565,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1694971510
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8612,6 +8684,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1700172975 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -8634,6 +8710,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1711788982 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -8651,6 +8731,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1732173877
 GameObject:
   m_ObjectHideFlags: 0
@@ -8892,6 +8976,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1818968521
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9015,6 +9103,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1902894479
 GameObject:
   m_ObjectHideFlags: 0
@@ -9167,6 +9259,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1926802686 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -9184,6 +9280,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1969930356
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9299,6 +9399,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1992994698
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9414,6 +9518,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &1995580324
 GameObject:
   m_ObjectHideFlags: 0
@@ -9664,6 +9772,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &2069240639 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -9681,6 +9793,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &2110163088
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9796,6 +9912,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1 &2121285126 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8623740879425591250, guid: 0300e715ae643f346ada9abcf6b4adc8, type: 3}
@@ -9813,6 +9933,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
+  State: 0
+  Image: {fileID: 0}
+  Text: {fileID: 0}
 --- !u!1001 &1471884910921010260
 PrefabInstance:
   m_ObjectHideFlags: 0

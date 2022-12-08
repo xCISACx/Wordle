@@ -11,6 +11,11 @@ using UnityEngine.UI;
 
 public class WordleManager : MonoBehaviour
 {
+	public Color DefaultColour = Color.black;
+	public Color CorrectColour = new Color(108,169,101, 255);
+	public Color WrongPlaceColour = new Color(200,182,83, 255);
+	public Color IncorrectColour = new Color(120,124,127, 255);
+	
 	[SerializeField] private string _solution;
 	[SerializeField] private string _answer;
 	[SerializeField] private int _wordLength = 0;
@@ -53,26 +58,36 @@ public class WordleManager : MonoBehaviour
     [SerializeField] private GameObject _winCanvas; 
     [SerializeField] private TMP_Text _attemptsText;
 
-    private Dictionary<string, int> _letterFrequencyDictionary = new Dictionary<string, int>();
+    private Dictionary<string, int> _solutionLetterFrequencyDictionary = new Dictionary<string, int>();
     private Dictionary<string, int> _guessLetterFrequencyDictionary = new Dictionary<string, int>();
     
-    [SerializeField] List<string> _previousLetters = new List<string>();
+    public string remaining;
 
     private void Awake()
     {
 	    var seed = DateTime.Now.Ticks;
+	    
 	    UnityEngine.Random.InitState((int) seed);
+	    
 	    InitialiseValues();
 	    UpdateRound();
+	    
 	    AddWordsToList("AllowedWords", _allowedWordsList);
-	    Debug.LogWarning(_allowedWordsList.Count);
+	    //Debug.LogWarning(_allowedWordsList.Count);
 	    AddWordsToList("PossibleWords", _possibleWordsList);
-	    Debug.LogWarning(_possibleWordsList.Count);
+	    //Debug.LogWarning(_possibleWordsList.Count);
+	    
 	    PickRandomWord();
+	    
 	    _currentUIRow = _uiRows[_currentRound].gameObject;
 	    _currentUIColumn = _uiColumns[_currentChar].gameObject;
+	    
 	    SetKeyBoardKeys();
+	    
 	    InitGuessFrequencyDictionary();
+	    InitSolutionFrequencyDictionary();
+	    
+	    UpdateSolutionFrequencyDictionary();
 
 	    foreach (var @char in _uiColumns)
 	    {
@@ -105,6 +120,25 @@ public class WordleManager : MonoBehaviour
 
 	    Debug.Log("init guess frequency");
     }
+    
+    [ContextMenu("Init Solution Frequency")]
+    void InitSolutionFrequencyDictionary()
+    {
+	    _solutionLetterFrequencyDictionary.Clear();
+
+	    foreach (var key in _keyboardKeys)
+	    {
+		    _solutionLetterFrequencyDictionary.Add(key, 0);
+	    }
+
+	    foreach (var pair in _solutionLetterFrequencyDictionary)
+	    {
+		    Debug.Log("Letter: " + pair.Key.ToString() + ", Frequency: " + pair.Value.ToString());
+	    }
+
+	    Debug.Log("init solution frequency");
+    }
+
 
     [ContextMenu("Update Guess Frequency")]
     void UpdateGuessFrequencyDictionary(string answer)
@@ -123,6 +157,30 @@ public class WordleManager : MonoBehaviour
 	    }
 
 	    foreach (var pair in _guessLetterFrequencyDictionary)
+	    {
+		    Debug.Log("Letter: " + pair.Key.ToString() + ", Frequency: " + pair.Value.ToString());
+	    }
+	    
+	    Debug.Log("updated frequency");
+    }
+    
+    [ContextMenu("Update Solution Frequency")]
+    void UpdateSolutionFrequencyDictionary()
+    {
+	    _solutionLetterFrequencyDictionary.Clear();
+
+	    foreach (var key in _keyboardKeys)
+	    {
+		    _solutionLetterFrequencyDictionary.Add(key, 0);
+	    }
+
+	    for (int i = 0; i < _solution.Length; i++)
+	    {
+		    Debug.Log( _solutionLetterFrequencyDictionary[_solution[i].ToString()]);
+		    _solutionLetterFrequencyDictionary[_solution[i].ToString()] += 1;
+	    }
+
+	    foreach (var pair in _solutionLetterFrequencyDictionary)
 	    {
 		    Debug.Log("Letter: " + pair.Key.ToString() + ", Frequency: " + pair.Value.ToString());
 	    }
@@ -216,7 +274,6 @@ public class WordleManager : MonoBehaviour
     public void TypeKey(string key)
     {
 	    var s = key;
-	    Debug.Log("typing " + key);
 	    _inputString = s;
 
 	    var chars = _currentUIRow.GetComponentsInChildren<Char>();
@@ -227,9 +284,7 @@ public class WordleManager : MonoBehaviour
 	    _currentChar++;
 	    _wordLength++;
 	    _inputString = "";
-	    
-	    Debug.LogWarning(_answer);
-	    
+
 	    if (!_allowedWordsList.Contains(_answer))
 	    {
 		    for (int i = 0; i < _answer.Length; i++)
@@ -255,13 +310,12 @@ public class WordleManager : MonoBehaviour
 		    
 		    var correctCount = 0;
 		    _guessedLettersList.Clear();
-		    var correctLetterCount = 0;
 
 		    UpdateGuessFrequencyDictionary(_answer);
 
 		    if (_answer.Length == 5)
 		    {
-			    string remaining = _answer;
+			    remaining = _answer;
 			    
 			    for (int i = 0; i < _answer.Length; i++)
 			    {
@@ -275,74 +329,42 @@ public class WordleManager : MonoBehaviour
 				    //get keyboard letter to light up
 				    
 				    GameObject currentKeyboardLetter = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == _answer[i].ToString()).ToList()[0].gameObject;
+				    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
 				    
 				    Debug.Log(currentKeyboardLetter);
-				    
-				    var currentColumnImage = _currentUIColumn.GetComponentInChildren<Image>();
-				    var currentColumnText = _currentUIColumn.GetComponentInChildren<TMP_Text>();
-				    
-				    var currentKeyboardLetterImage = currentKeyboardLetter.GetComponentInChildren<Image>();
-				    var currentKeyboardLetterText = currentKeyboardLetter.GetComponentInChildren<TMP_Text>();
-				    
+
 				    var chars = _currentUIRow.GetComponentsInChildren<Char>();
 				    
-				    var charAnim = _currentUIColumn.GetComponent<Animator>();
-				    
-				    // get the letters before the current letter
-
-				    for (int j = i; j > 0; j--)
-				    {
-					    _previousLetters.Add(_answer[j].ToString());
-				    }
-
 				    _currentUIColumn = chars[i].gameObject;
 
 				    // if the current letter matches the position of the same letter in the solution
 
 				    if (_answer[i].ToString() == _solution[i].ToString())
 				    {
-					    // we need to disable the animator to change colours because if we don't it overrides the colour change...
+					    currentKeyboardKey.state = KeyboardKey.tileState.Correct;
 					    
-					    charAnim.enabled = false;
-					    
-					    //make panel green
-					    //make text black
-					    
-					    currentColumnImage.color = Color.green;
-
-					    currentKeyboardLetterImage.color = Color.green;
-					    currentKeyboardLetterText.color = Color.white;
-					    
-					    _currentUIColumn.GetComponent<Char>().state = Char.tileState.Correct;
+					    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Correct;
 
 					    remaining = remaining.Remove(i, 1);
 					    remaining = remaining.Insert(i, " ");
 					    
 					    correctCount++;
-					    correctLetterCount++;
-					    
+
 					    Debug.Log("green " + i);
 				    }
-				    
+
 				    // if the current letter does not match the position of the same letter in the solution and does not exist in the solution
 				    
 				    else if (!_solution.Contains(_answer[i].ToString()))
 				    {
-					    // we need to disable the animator to change colours because if we don't it overrides the colour change...
-					    
-					    /*charAnim.enabled = false;
-					    
-					    //make panel grey
-					    //make text white
-					    
-					    currentColumnImage.color = Color.grey;
-					    currentKeyboardLetterImage.color = Color.grey;*/
-
-					    _currentUIColumn.GetComponent<Char>().state = Char.tileState.Incorrect;
+					    currentKeyboardKey.state = KeyboardKey.tileState.Incorrect;
+					    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Incorrect;
 					    
 					    Debug.Log("grey " + i);
 				    }
 			    }
+
+			    bool multipleCount = false;
 			    
 			    for (int j = 0; j < _answer.Length; j++)
 			    {
@@ -351,192 +373,81 @@ public class WordleManager : MonoBehaviour
 				    //get keyboard letter to light up
 				    
 				    GameObject currentKeyboardLetter = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == _answer[j].ToString()).ToList()[0].gameObject;
+				    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
 
-				    var currentColumnImage = _currentUIColumn.GetComponentInChildren<Image>();
-				    var currentColumnText = _currentUIColumn.GetComponentInChildren<TMP_Text>();
-				    
-				    var currentKeyboardLetterImage = currentKeyboardLetter.GetComponentInChildren<Image>();
-				    var currentKeyboardLetterText = currentKeyboardLetter.GetComponentInChildren<TMP_Text>();
-				    
 				    Char currentChar = _currentUIRow.GetComponentsInChildren<Char>()[j];
-				    
-				    var charAnim = _currentUIColumn.GetComponent<Animator>();
 
-				    if (currentChar.state != Char.tileState.Correct && currentChar.state != Char.tileState.Incorrect)
+				    if (currentChar.State != Char.TileState.Correct && currentChar.State != Char.TileState.Incorrect)
 				    {
 					    if (remaining.Contains(_answer[j]))
 					    {
-						    currentChar.state = Char.tileState.WrongPlace;
+						    // if the solution only has one instance of the letter and the guess has two or more:
+						    // mark the first as wrong place and the rest incorrect
 
-						    int index = remaining.IndexOf(_answer[j]);
-						    remaining = remaining.Remove(index, 1);
-						    remaining = remaining.Insert(index, " ");
-						    
-						    Debug.Log("yellow " + j);
-						    
-						    // we need to disable the animator to change colours because if we don't it overrides the colour change...
-					    
-						    /*charAnim.enabled = false;
-						    
-						    /*_currentUIRow.GetComponentsInChildren<Char>()[index].gameObject.GetComponentInChildren<Image>().color = Color.yellow;
-						    _currentUIRow.GetComponentsInChildren<Char>()[index].gameObject.GetComponentInChildren<TMP_Text>().color = Color.black;#1#
-						    
-						    Debug.Log(currentColumnImage);
-
-						    currentColumnImage.color = Color.yellow;
-						    currentColumnText.color = Color.black;*/
-
-						    if (currentKeyboardLetterImage.color != Color.green)
+						    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] < 2 && _guessLetterFrequencyDictionary[_answer[j].ToString()] > 1 && !multipleCount)
 						    {
-							    currentKeyboardLetterImage.color = Color.yellow;
-							    currentKeyboardLetterText.color = Color.black;
-						    
-							    Debug.Log("Making keyboard " + _answer[j] + " YELLOW since it's not green");
+							    int index = remaining.IndexOf(_answer[j]);
+							    remaining = remaining.Remove(index, 1);
+							    remaining = remaining.Insert(index, " ");
+							    currentChar.State = Char.TileState.WrongPlace;
+							    
+							    Debug.Log("yellow " + j);
+							    
+							    multipleCount = true;
+						    }
+						    else
+						    {
+							    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] >=
+							             _guessLetterFrequencyDictionary[_answer[j].ToString()])
+							    {
+								    currentChar.State = Char.TileState.WrongPlace;
+								    
+								    Debug.Log("YELLOW LAST " + j);
+							    }
+							    else
+							    {
+								    currentChar.State = Char.TileState.Incorrect;
+
+								    Debug.Log("grey LAST " + j);   
+							    }
 						    }
 						    
+						    // check how many of a letter is in the answer and guess that have been marked as correct
+
+						    if (_guessLetterFrequencyDictionary[_answer[j].ToString()] > _solutionLetterFrequencyDictionary[_answer[j].ToString()])
+						    {
+							    for (int i = 0; i < _answer.Length; i++)
+							    {
+								    var newCurrentCharI = _currentUIRow.GetComponentsInChildren<Char>()[i];
+								    var newCurrentCharJ = _currentUIRow.GetComponentsInChildren<Char>()[j];
+
+								    if (newCurrentCharI.State == Char.TileState.Correct && _answer[i] == _answer[j])
+								    {
+									    // we already have an instance of that letter that is correct, so mark all others as incorrect
+									    newCurrentCharJ.State = Char.TileState.Incorrect;
+									    
+									    Debug.Log("There's already another instance of " + _answer[j] + " that is in the right place so all other are incorrect");
+								    }
+							    }
+						    }
+
+						    if (currentKeyboardKey.state != KeyboardKey.tileState.Correct)
+						    {
+							    currentKeyboardKey.state = KeyboardKey.tileState.WrongPlace;
+
+							    Debug.Log("Making keyboard " + _answer[j] + " YELLOW since it's not green");
+						    }
 					    }
 					    else
 					    {
-						    currentChar.state = Char.tileState.Incorrect;
-						    
-						    /*// we need to disable the animator to change colours because if we don't it overrides the colour change...
-					    
-						    charAnim.enabled = false;
-						    
-						    currentColumnImage.color = Color.grey;
-						    currentColumnText.color = Color.white;*/
-						    
+						    currentChar.State = Char.TileState.Incorrect;
+
 						    Debug.Log("grey LAST " + j);
 					    }
 				    }
 			    }
 		    }
 
-		    /*for (int i = 0; i < _answer.Length; i++)
-		    {
-			    _previousLetters.Clear();
-			    
-			    if (_answer.Length == 5)
-			    {
-				    if (!_guessedLettersList.Contains(_answer[i].ToString()))
-				    {
-					    _guessedLettersList.Add(_answer[i].ToString());
-				    }
-				    
-				    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[i].gameObject;
-				    
-				    //get keyboard letter to light up
-				    
-				    GameObject currentKeyboardLetter = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == _answer[i].ToString()).ToList()[0].gameObject;
-				    
-				    Debug.Log(currentKeyboardLetter);
-				    
-				    var currentColumnImage = _currentUIColumn.GetComponentInChildren<Image>();
-				    var currentColumnText = _currentUIColumn.GetComponentInChildren<TMP_Text>();
-				    
-				    var currentKeyboardLetterImage = currentKeyboardLetter.GetComponentInChildren<Image>();
-				    var currentKeyboardLetterText = currentKeyboardLetter.GetComponentInChildren<TMP_Text>();
-				    
-				    var chars = _currentUIRow.GetComponentsInChildren<Char>();
-				    
-				    var charAnim = _currentUIColumn.GetComponent<Animator>();
-				    
-				    // get the letters before the current letter
-
-				    for (int j = i; j > 0; j--)
-				    {
-					    _previousLetters.Add(_answer[j].ToString());
-				    }
-
-				    _currentUIColumn = chars[i].gameObject;
-					    
-				    Debug.Log(_currentUIColumn);
-
-				    // if the current letter does not match the position of the same letter in the solution but exists in the solution
-				    
-				    if (_answer[i].ToString() != _solution[i].ToString() && _solution.Contains(_answer[i].ToString()))
-				    {
-					    // we need to disable the animator to change colours because if we don't it overrides the colour change...
-
-					    charAnim.enabled = false;
-					    
-					    //make panel yellow
-					    //make text black
-					    
-					    currentColumnImage.color = Color.yellow;
-					    currentColumnText.color = Color.black;
-					    
-					    Debug.Log("Making char " + i + " YELLOW since it's not in the right place");
-
-					    // if the current letter is already in the word in another place, mark it grey instead of yellow
-
-					    Debug.Log("Char " + i);
-					    Debug.Log(_answer.Contains(_answer[i].ToString()));
-					    Debug.Log(_guessedLettersList.Contains(_answer[i].ToString()));
-					    Debug.Log(_guessLetterFrequencyDictionary[_answer[i].ToString()] > 1);
-					    Debug.Log(_previousLetters.Contains(_answer[i].ToString()));
-
-					    if (_solution.Contains(_answer[i].ToString()) && _guessedLettersList.Contains(_answer[i].ToString()) 
-					        && _guessLetterFrequencyDictionary[_answer[i].ToString()] > 1 && _previousLetters.Contains(_answer[i].ToString()))
-					    {
-						    currentColumnImage.color = Color.grey;
-						    currentColumnText.color = Color.white;
-
-						    Debug.Log("Making char " + i + " GRAY since there's another instance of it in the word in the right place");
-					    }
-					    
-					    // if the current letter is not already marked green on the keyboard, mark it yellow, otherwise leave it be
-
-					    if (currentKeyboardLetterImage.color != Color.green)
-					    {
-						    currentKeyboardLetterImage.color = Color.yellow;
-						    currentKeyboardLetterText.color = Color.black;
-						    
-						    Debug.Log("Making keyboard " + _answer[i] + " YELLOW since it's not green");
-					    }
-				    }
-				    
-				    // if the current letter does not match the position of the same letter in the solution and does not exist in the solution
-				    
-				    else if (!_solution.Contains(_answer[i].ToString()))
-				    {
-					    // we need to disable the animator to change colours because if we don't it overrides the colour change...
-					    
-					    charAnim.enabled = false;
-					    
-					    //make panel grey
-					    //make text white
-					    
-					    currentColumnImage.color = Color.grey;
-					    currentKeyboardLetterImage.color = Color.grey;
-					    
-					    Debug.Log("grey " + i);
-				    }
-				    
-				    // if the current letter matches the position of the same letter in the solution
-
-				    if (_answer[i].ToString() == _solution[i].ToString())
-				    {
-					    // we need to disable the animator to change colours because if we don't it overrides the colour change...
-					    
-					    charAnim.enabled = false;
-					    
-					    //make panel green
-					    //make text black
-					    
-					    currentColumnImage.color = Color.green;
-
-					    currentKeyboardLetterImage.color = Color.green;
-					    currentKeyboardLetterText.color = Color.white;
-					    
-					    correctCount++;
-					    correctLetterCount++;
-					    
-					    Debug.Log("green " + i);
-				    }
-			    }
-		    }*/
-	    
 		    Debug.Log("correct letters: " + correctCount);
 
 		    if (correctCount == 5)

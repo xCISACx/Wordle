@@ -7,7 +7,8 @@ using UnityEngine.UI;
 
 public class Char : MonoBehaviour
 {
-    public enum tileState
+    public WordleManager WordleManager;
+    public enum TileState
     {
         None,
         Correct,
@@ -15,10 +16,15 @@ public class Char : MonoBehaviour
         WrongPlace
     };
 
-    public tileState state;
+    public TileState State;
 
     public Image Image;
     public TMP_Text Text;
+
+    private Color _defaultColour; 
+    private Color _correctColour;
+    private Color _wrongPlaceColour;
+    private Color _incorrectColour;
     
     // Start is called before the first frame update
     void Start()
@@ -30,31 +36,38 @@ public class Char : MonoBehaviour
     {
         Image = GetComponentInChildren<Image>();
         Text = GetComponentInChildren<TMP_Text>();
+        WordleManager = FindObjectOfType<WordleManager>();
+
+        _defaultColour = WordleManager.DefaultColour; 
+        _correctColour = WordleManager.CorrectColour;
+        _wrongPlaceColour = WordleManager.WrongPlaceColour;
+        _incorrectColour = WordleManager.IncorrectColour;
     }
 
     // Update is called once per frame
     void Update()
     {
-        switch (state)
+        switch (State)
         {
-            case tileState.Correct:
+            case TileState.Correct:
 
                 GetComponent<Animator>().enabled = false;
-                Image.color = Color.green;
-                Text.color = Color.black;
-                break;
-            case tileState.Incorrect:
-                
-                GetComponent<Animator>().enabled = false;
-                Image.color = Color.gray;
+                Image.color = _correctColour;
                 Text.color = Color.white;
                 break;
             
-            case tileState.WrongPlace:
+            case TileState.Incorrect:
                 
                 GetComponent<Animator>().enabled = false;
-                Image.color = Color.yellow;
-                Text.color = Color.black;
+                Image.color = _incorrectColour;
+                Text.color = Color.white;
+                break;
+            
+            case TileState.WrongPlace:
+                
+                GetComponent<Animator>().enabled = false;
+                Image.color = _wrongPlaceColour;
+                Text.color = Color.white;
                 break;
         }
     }
