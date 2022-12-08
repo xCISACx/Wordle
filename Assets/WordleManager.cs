@@ -1,32 +1,32 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using DG.Tweening;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class WordleManager : MonoBehaviour
 {
+	public InputManager InputManager;
+	
 	[Header("Tile Settings")]
 	
 	public Color DefaultColour = Color.black;
 	public Color CorrectColour = new Color(108,169,101, 255);
 	public Color WrongPlaceColour = new Color(200,182,83, 255);
 	public Color IncorrectColour = new Color(120,124,127, 255);
-	public float ColourChangeDuration = 0.3f;
 	public Vector3 PunchForce = new Vector3(0, 10f, 0);
+	public Vector3 InvalidPunchForce = new Vector3(10f, 0, 0);
 	public float PunchDuration = 0.5f;
-	
+	public float InvalidPunchDuration = 0.1f;
+
 	[Header("Match Variables")]
 	
 	[SerializeField] private string _solution;
 	[SerializeField] private string _answer;
-	[SerializeField] private int _wordLength = 0;
+	[SerializeField] private int _wordLength;
 	[SerializeField] private List<string> _allowedWordsList;
 	[SerializeField] private List<string> _possibleWordsList;
 	[SerializeField] private List<string> _guessedLettersList;
@@ -34,9 +34,9 @@ public class WordleManager : MonoBehaviour
 	[SerializeField] private List<Char> _uiColumns;
 
 	[SerializeField] private string _inputString = "";
-	[SerializeField] private int _currentRound = 0;
+	[SerializeField] private int _currentRound;
 	[SerializeField] private int _maxRounds = 5;
-	[SerializeField] private int _currentChar = 0;
+	[SerializeField] private int _currentChar;
 	[SerializeField] private string _remaining;
     private readonly Dictionary<string, int> _solutionLetterFrequencyDictionary = new Dictionary<string, int>();
     private readonly Dictionary<string, int> _guessLetterFrequencyDictionary = new Dictionary<string, int>();
@@ -49,14 +49,6 @@ public class WordleManager : MonoBehaviour
 		KeyCode.K, KeyCode.L, KeyCode.M, KeyCode.N, KeyCode.O, KeyCode.P, KeyCode.Q, KeyCode.R, KeyCode.S, KeyCode.T,
 		KeyCode.U, KeyCode.V, KeyCode.W,
 		KeyCode.X, KeyCode.Y, KeyCode.Z
-	};
-
-	[SerializeField] private GameObject _keyboard;
-
-	[SerializeField] private string[] _keyboardKeys =
-	{
-		"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C",
-		"V", "B", "N", "M"
 	};
 
 	[SerializeField] private GameObject _currentUIRow;
@@ -82,26 +74,23 @@ public class WordleManager : MonoBehaviour
 	    UpdateRound();
 	    
 	    AddWordsToList("AllowedWords", _allowedWordsList);
-	    //Debug.LogWarning(_allowedWordsList.Count);
+
 	    AddWordsToList("PossibleWords", _possibleWordsList);
-	    //Debug.LogWarning(_possibleWordsList.Count);
 	    
 	    PickRandomWord();
 	    
 	    _currentUIRow = _uiRows[_currentRound].gameObject;
 	    _currentUIColumn = _uiColumns[_currentChar].gameObject;
-	    
-	    SetKeyBoardKeys();
-	    
-	    InitGuessFrequencyDictionary();
-	    InitSolutionFrequencyDictionary();
-	    
-	    UpdateSolutionFrequencyDictionary();
 
-	    /*foreach (var @char in _uiColumns)
-	    {
-		    @char.GetComponent<Animator>().enabled = true;
-	    }*/
+	    /*InitFrequencyDictionary(_guessLetterFrequencyDictionary);
+	    InitFrequencyDictionary(_solutionLetterFrequencyDictionary);*/
+
+	    InputManager = GetComponent<InputManager>();
+	    
+	    InputManager.SetKeyBoardKeys();
+	    
+		UpdateFrequencyDictionary(_guessLetterFrequencyDictionary, _answer);
+	    UpdateFrequencyDictionary(_solutionLetterFrequencyDictionary, _solution);
     }
 
     private void InitialiseValues()
@@ -111,91 +100,6 @@ public class WordleManager : MonoBehaviour
 		_currentRound = 0;
 		_currentChar = 0;
     }
-    
-    [ContextMenu("Init Guess Frequency")]
-    void InitGuessFrequencyDictionary()
-    {
-	    _guessLetterFrequencyDictionary.Clear();
-
-	    foreach (var key in _keyboardKeys)
-	    {
-		    _guessLetterFrequencyDictionary.Add(key, 0);
-	    }
-
-	    foreach (var pair in _guessLetterFrequencyDictionary)
-	    {
-		    Debug.Log("Letter: " + pair.Key.ToString() + ", Frequency: " + pair.Value.ToString());
-	    }
-
-	    Debug.Log("init guess frequency");
-    }
-    
-    [ContextMenu("Init Solution Frequency")]
-    void InitSolutionFrequencyDictionary()
-    {
-	    _solutionLetterFrequencyDictionary.Clear();
-
-	    foreach (var key in _keyboardKeys)
-	    {
-		    _solutionLetterFrequencyDictionary.Add(key, 0);
-	    }
-
-	    foreach (var pair in _solutionLetterFrequencyDictionary)
-	    {
-		    Debug.Log("Letter: " + pair.Key.ToString() + ", Frequency: " + pair.Value.ToString());
-	    }
-
-	    Debug.Log("init solution frequency");
-    }
-
-
-    [ContextMenu("Update Guess Frequency")]
-    void UpdateGuessFrequencyDictionary(string answer)
-    {
-	    _guessLetterFrequencyDictionary.Clear();
-
-	    foreach (var key in _keyboardKeys)
-	    {
-		    _guessLetterFrequencyDictionary.Add(key, 0);
-	    }
-
-	    for (int i = 0; i < answer.Length; i++)
-	    {
-		    Debug.Log( _guessLetterFrequencyDictionary[answer[i].ToString()]);
-		    _guessLetterFrequencyDictionary[answer[i].ToString()] += 1;
-	    }
-
-	    foreach (var pair in _guessLetterFrequencyDictionary)
-	    {
-		    Debug.Log("Letter: " + pair.Key.ToString() + ", Frequency: " + pair.Value.ToString());
-	    }
-	    
-	    Debug.Log("updated frequency");
-    }
-    
-    [ContextMenu("Update Solution Frequency")]
-    void UpdateSolutionFrequencyDictionary()
-    {
-	    _solutionLetterFrequencyDictionary.Clear();
-
-	    foreach (var key in _keyboardKeys)
-	    {
-		    _solutionLetterFrequencyDictionary.Add(key, 0);
-	    }
-
-	    for (int i = 0; i < _solution.Length; i++)
-	    {
-		    Debug.Log( _solutionLetterFrequencyDictionary[_solution[i].ToString()]);
-		    _solutionLetterFrequencyDictionary[_solution[i].ToString()] += 1;
-	    }
-
-	    foreach (var pair in _solutionLetterFrequencyDictionary)
-	    {
-		    Debug.Log("Letter: " + pair.Key.ToString() + ", Frequency: " + pair.Value.ToString());
-	    }
-	    
-	    Debug.Log("updated frequency");
-    }
 
     private void OnValidate()
     {
@@ -203,54 +107,15 @@ public class WordleManager : MonoBehaviour
 	    _uiColumns = GetComponentsInChildren<Char>().ToList();
     }
 
-    private void TweenToRed(Transform target, float duration)
-    {
-	    target.GetComponentInChildren<Image>().DOColor(Color.red, duration);
-    }
-
-    private void PunchTarget(Transform target, Vector3 force, float duration)
-    {
-	    target.DOPunchPosition(force, duration);
-    }
-
-    [ContextMenu("Set Keyboard Keys")]
-    private void SetKeyBoardKeys()
-    {
-	    var keyboardKeys = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Typeable).ToList();
-
-	    for (int i = 0; i < keyboardKeys.Count; i++)
-	    {
-		    var key = keyboardKeys[i];
-		    
-		    key.Key = _keyboardKeys[i];
-			    
-		    var textComponent = key.GetComponentInChildren<TMP_Text>();
-        
-		    if (textComponent)
-		    {
-			    textComponent.text = key.Key;
-		    }
-	    }
-
-	    var backSpaceKey = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == "Backspace").ToList();
-	    backSpaceKey[0].GetComponentInChildren<TMP_Text>().text = "<-";
-	    
-	    var enterKey = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == "Enter").ToList();
-	    enterKey[0].GetComponentInChildren<TMP_Text>().text = "Go";
-    }
-
     private void Update()
     {
 	    if (_wordLength > -1 && _wordLength <= 4)
 	    {
 		    var key = ReadKeyInput();
-		    
-		    //Debug.Log("reading key " + key);
-		    
+
 		    if (Input.anyKeyDown && AcceptedKeys.Contains(key))
 		    {
 			    TypeKey(key.ToString());
-			    //Debug.Log(Answer);
 		    }
 	    }
 
@@ -270,9 +135,6 @@ public class WordleManager : MonoBehaviour
 			    Debug.Log("no solution");
 		    }
 	    }
-
-	    //Debug.Log(InputString.Length);
-	    //Debug.Log(Answer.Length);
     }
 
     public void DeleteLastChar()
@@ -289,13 +151,20 @@ public class WordleManager : MonoBehaviour
 		    
 		    _currentUIColumn.GetComponentInChildren<TMP_Text>().text = "";
 		    
-		    for (int i = 0; i < _answer.Length + 1; i++)
-		    {
-			    var currentPanel = chars[i].gameObject;
-			    var currentPanelImage = currentPanel.GetComponentInChildren<Image>();
+		    SetTileColours(chars, DefaultColour);
+	    }
+    }
+
+    void SetTileColours(Char[] tiles, Color color)
+    {
+	    for (int i = 0; i < 5; i++)
+	    {
+		    var currentPanel = tiles[i].gameObject;
+		    var currentPanelImage = currentPanel.GetComponentInChildren<Image>();
 			    
-			    currentPanelImage.color = DefaultColour;
-		    }
+		    currentPanelImage.color = color;
+		    Debug.Log("reset tile " + i + "'s colour");
+		    //currentPanel.GetComponent<RectTransform>().anchoredPosition = currentPanel.GetComponent<Char>().DefaultPosition;
 	    }
     }
 
@@ -318,9 +187,7 @@ public class WordleManager : MonoBehaviour
 		    _wordLength++;
 		    _inputString = "";   
 		    
-		    PunchTarget(_currentUIColumn.transform, new Vector3(0, 5f, 0), PunchDuration);
-		    
-		    //_currentUIColumn.transform.DOPunchPosition(new Vector3(0, 5f, 0), PunchDuration);
+		    PunchTarget(_currentUIColumn.transform, PunchForce, PunchDuration);
 	    }
 
 	    if (!_allowedWordsList.Contains(_answer))
@@ -331,16 +198,9 @@ public class WordleManager : MonoBehaviour
 			    {
 				    var currentPanel = chars[i].gameObject;
 				    
-				    PunchTarget(currentPanel.transform, PunchForce, PunchDuration);
+				    ShakeTarget(currentPanel.transform, InvalidPunchForce, InvalidPunchDuration);
 				    
-				    //currentPanel.transform.DOPunchPosition(PunchForce, PunchDuration);
-				    
-				    TweenToRed(currentPanel.transform, ColourChangeDuration);
-
-				    //var currentPanelAnim = currentPanel.GetComponent<Animator>();
-				    //currentPanelAnim.SetTrigger(Animator.StringToHash("Flash Red"));
-				    
-				    //currentPanel.GetComponent<Animator>().ResetTrigger(Animator.StringToHash("Flash Red"));
+				    SetTileColours(chars, Color.red);
 			    }
 		    }
 	    }
@@ -355,7 +215,7 @@ public class WordleManager : MonoBehaviour
 		    var correctCount = 0;
 		    _guessedLettersList.Clear();
 
-		    UpdateGuessFrequencyDictionary(_answer);
+		    UpdateFrequencyDictionary(_guessLetterFrequencyDictionary, _answer);
 
 		    if (_answer.Length == 5)
 		    {
@@ -371,8 +231,8 @@ public class WordleManager : MonoBehaviour
 				    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[i].gameObject;
 				    
 				    //get keyboard letter to light up
-				    
-				    GameObject currentKeyboardLetter = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == _answer[i].ToString()).ToList()[0].gameObject;
+
+				    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(_answer, i);
 				    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
 				    
 				    Debug.Log(currentKeyboardLetter);
@@ -417,8 +277,8 @@ public class WordleManager : MonoBehaviour
 				    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[j].gameObject;
 				    
 				    //get keyboard letter to light up
-				    
-				    GameObject currentKeyboardLetter = _keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == _answer[j].ToString()).ToList()[0].gameObject;
+
+				    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(_answer, j);
 				    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
 
 				    Char currentChar = _currentUIRow.GetComponentsInChildren<Char>()[j];
@@ -472,7 +332,7 @@ public class WordleManager : MonoBehaviour
 									    // we already have an instance of that letter that is correct, so mark all others as incorrect
 									    newCurrentCharJ.State = Char.TileState.Incorrect;
 									    
-									    Debug.Log("There's already another instance of " + _answer[j] + " that is in the right place so all other are incorrect");
+									    Debug.Log("There's already another instance of " + _answer[j] + " that is in the right place so all others are incorrect");
 								    }
 							    }
 						    }
@@ -501,7 +361,7 @@ public class WordleManager : MonoBehaviour
 			    Debug.Log("Winner");
 			    _winCanvas.SetActive(true);
 			    _solutionTextWin.text = _solution.ToUpper();
-			    _attemptsText.text = (_currentRound + 1).ToString() + " attempt(s)";
+			    _attemptsText.text = (_currentRound + 1) + " attempt(s)";
 		    }
 		    else
 		    {
@@ -521,6 +381,34 @@ public class WordleManager : MonoBehaviour
 	    }
     }
 
+    GameObject GetCurrentKeyboardLetter(string word, int index)
+    {
+	    return InputManager.Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == word[index].ToString()).ToList()[0].gameObject;
+    }
+
+    private void PunchTarget(Transform target, Vector3 force, float duration)
+    {
+	    //var punchTween = new DOTween();
+	    //target.DOPunchPosition(force, duration).OnComplete( () => ResetPunch(target));
+	    target.DOPunchPosition(force, duration).OnComplete( () => target.DORewind());
+	    
+    }
+    
+    private void ShakeTarget(Transform target, Vector3 force, float duration)
+    {
+	    //var punchTween = new DOTween();
+	    target.DOShakePosition(duration, force, 10, 0f)
+		    .SetRecyclable(true)
+		    .SetAutoKill(false)
+		    .OnComplete( () => target.DORewind());
+	    /*target.DOShakeRotation(duration, force, 100, 0f)
+		    .SetRecyclable(true)
+		    .SetAutoKill(false)
+		    .OnComplete( () => target.DORewind());*/
+
+	    //DOTween.Sequence().Append(target.DORotate(force, duration, RotateMode.WorldAxisAdd)).Append(target.DORotate(-force, duration, RotateMode.WorldAxisAdd)).SetLoops(RotationLoops);
+    }
+
     void UpdateRound()
     {
 	    _inputString = "";
@@ -529,7 +417,6 @@ public class WordleManager : MonoBehaviour
 	    _currentChar = 0;
 	    _currentUIRow = _uiRows[_currentRound].gameObject;
 	    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[_currentChar].gameObject;
-	    //current_char_name = "Container/WordsContainer/Label" + str(current_round) + "/Char"
     }
 
     void AddWordsToList(string path, List<string> list)
@@ -540,13 +427,13 @@ public class WordleManager : MonoBehaviour
 
 	#if UNITY_WEBGL
 
-	    var fileWords = fileContent.Split("\r\n", StringSplitOptions.None);
+	    var fileWords = fileContent.Split("\r\n");
 	    
 	#endif
 
 	#if !UNITY_WEBGL
 	
-		  var fileWords = fileContent.Split(Environment.NewLine, StringSplitOptions.None);
+		  var fileWords = fileContent.Split(Environment.NewLine);
 	    
 	#endif
 
@@ -554,22 +441,6 @@ public class WordleManager : MonoBehaviour
 	    {
 		    list.Add(word.ToUpper());
 	    }
-	    
-	    //list = new List<string>(fileWords);
-
-	    /*var words = File.ReadLines(path);
-		    
-	    StreamReader reader = new StreamReader(path);
-
-	    var index = 1;
-	    
-	    while (!reader.EndOfStream)
-	    {
-		    var line = reader.ReadLine();
-		    list.Add(line);
-		    index++;
-	    }
-	    reader.Close();*/
     }
 
     void PickRandomWord()
@@ -580,18 +451,83 @@ public class WordleManager : MonoBehaviour
 
     private KeyCode ReadKeyInput()
     {
-        foreach(KeyCode vkey in System.Enum.GetValues(typeof(KeyCode)))
+        foreach (KeyCode keyValue in Enum.GetValues(typeof(KeyCode)))
         {
-	        if(Input.GetKeyDown(vkey))
+	        if (Input.GetKeyDown(keyValue))
 	        {
-		        if (vkey != KeyCode.Return)
+		        if (keyValue != KeyCode.Return)
 		        {
-			        return vkey;
+			        return keyValue;
 		        }
 	        }
         }
 
         return KeyCode.KeypadPeriod;
+    }
+    
+    [ContextMenu("Init Solution Frequency UI")]
+    void InitSolutionFrequencyDictionary()
+    {
+	    _solutionLetterFrequencyDictionary.Clear();
+
+	    foreach (var key in InputManager.KeyboardKeys)
+	    {
+		    _solutionLetterFrequencyDictionary.Add(key, 0);
+	    }
+
+	    foreach (var pair in _solutionLetterFrequencyDictionary)
+	    {
+		    Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
+	    }
+
+	    Debug.Log("init solution frequency");
+    }
+
+    [ContextMenu("Update Solution Frequency UI")]
+    void UpdateSolutionFrequencyDictionary()
+    {
+	    _solutionLetterFrequencyDictionary.Clear();
+
+	    foreach (var key in InputManager.KeyboardKeys)
+	    {
+		    _solutionLetterFrequencyDictionary.Add(key, 0);
+	    }
+
+	    foreach (var letter in _solution)
+	    {
+		    Debug.Log( _solutionLetterFrequencyDictionary[letter.ToString()]);
+		    _solutionLetterFrequencyDictionary[letter.ToString()] += 1;
+	    }
+
+	    foreach (var pair in _solutionLetterFrequencyDictionary)
+	    {
+		    Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
+	    }
+	    
+	    Debug.Log("updated solution frequency");
+    }
+    
+    void UpdateFrequencyDictionary(Dictionary<string, int> dictionary, string word)
+    {
+	    dictionary.Clear();
+
+	    foreach (var key in InputManager.KeyboardKeys)
+	    {
+		    dictionary.Add(key, 0);
+	    }
+
+	    foreach (var letter in word)
+	    {
+		    Debug.Log( dictionary[letter.ToString()]);
+		    dictionary[letter.ToString()] += 1;
+	    }
+
+	    foreach (var pair in dictionary)
+	    {
+		    Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
+	    }
+	    
+	    Debug.Log("updated frequency of " + dictionary.GetType().GetProperty(name));
     }
 
     public void RestartGame()

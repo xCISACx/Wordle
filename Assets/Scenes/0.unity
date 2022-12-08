@@ -792,6 +792,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -1703,6 +1704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -2754,6 +2756,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -4942,6 +4945,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -4973,6 +4977,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -5102,6 +5107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -5119,6 +5125,7 @@ GameObject:
   - component: {fileID: 1107001234}
   - component: {fileID: 1107001233}
   - component: {fileID: 1107001237}
+  - component: {fileID: 1107001238}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -5222,11 +5229,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd9520a6ecbce8f40be8017119ac648b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InputManager: {fileID: 0}
   DefaultColour: {r: 0.22745098, g: 0.22745098, b: 0.22745098, a: 1}
   CorrectColour: {r: 0.0627451, g: 0.83137256, b: 0.27058825, a: 1}
   WrongPlaceColour: {r: 0.9137255, g: 0.8980392, b: 0.27450982, a: 1}
   IncorrectColour: {r: 0.5566038, g: 0.5566038, b: 0.5566038, a: 1}
-  ColourChangeDuration: 0.3
+  PunchForce: {x: 0, y: 5, z: 0}
+  InvalidPunchForce: {x: 0, y: 10, z: 0}
+  PunchDuration: 0.5
+  InvalidPunchDuration: 0.1
   _solution: MUSHY
   _answer: 
   _wordLength: 0
@@ -5275,10 +5286,29 @@ MonoBehaviour:
   _currentRound: 0
   _maxRounds: 5
   _currentChar: 0
-  _flashing: 0
+  _remaining: 
   AcceptedKeys: 6100000062000000630000006400000065000000660000006700000068000000690000006a0000006b0000006c0000006d0000006e0000006f000000700000007100000072000000730000007400000075000000760000007700000078000000790000007a000000
-  _keyboard: {fileID: 1732173877}
-  _keyboardKeys:
+  _currentUIRow: {fileID: 0}
+  _currentUIColumn: {fileID: 0}
+  _defeatCanvas: {fileID: 1460465900}
+  _solutionTextWin: {fileID: 420591484}
+  _solutionTextLose: {fileID: 134281543}
+  _winCanvas: {fileID: 1594661397}
+  _attemptsText: {fileID: 1379349502}
+--- !u!114 &1107001238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1107001232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1e94484a1baff54cbd6b678a372a553, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Keyboard: {fileID: 1732173877}
+  KeyboardKeys:
   - Q
   - W
   - E
@@ -5305,14 +5335,6 @@ MonoBehaviour:
   - B
   - N
   - M
-  _currentUIRow: {fileID: 0}
-  _currentUIColumn: {fileID: 0}
-  _defeatCanvas: {fileID: 1460465900}
-  _solutionTextWin: {fileID: 420591484}
-  _solutionTextLose: {fileID: 134281543}
-  _winCanvas: {fileID: 1594661397}
-  _attemptsText: {fileID: 1379349502}
-  remaining: 
 --- !u!1001 &1119849851
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5433,6 +5455,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -5557,6 +5580,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -5684,6 +5708,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -6054,6 +6079,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -6186,6 +6212,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -6199,7 +6226,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2182145758345479145, guid: ba2ab5029a231b047aa17edc3b60118c, type: 3}
       propertyPath: m_text
-      value: "\u2713"
+      value: Go
       objectReference: {fileID: 0}
     - target: {fileID: 2182145758345479145, guid: ba2ab5029a231b047aa17edc3b60118c, type: 3}
       propertyPath: m_isRightToLeft
@@ -6436,6 +6463,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -6641,6 +6669,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -7492,6 +7521,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -8017,6 +8047,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -8247,6 +8278,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -8691,6 +8723,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -8815,6 +8848,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -8841,6 +8875,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -8862,6 +8897,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -9107,6 +9143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -9234,6 +9271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -9390,6 +9428,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -9411,6 +9450,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -9535,6 +9575,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -9659,6 +9700,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -9918,6 +9960,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -9939,6 +9982,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -10063,6 +10107,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}
@@ -10084,6 +10129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 208a593d05def7c4e80c9a7b1fc9851c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DefaultPosition: {x: 0, y: 0, z: 0}
   WordleManager: {fileID: 0}
   State: 0
   Image: {fileID: 0}

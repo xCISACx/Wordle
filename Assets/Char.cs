@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class Char : MonoBehaviour
 {
+    public Vector3 DefaultPosition;
     public WordleManager WordleManager;
     public enum TileState
     {
@@ -37,6 +38,8 @@ public class Char : MonoBehaviour
         Image = GetComponentInChildren<Image>();
         Text = GetComponentInChildren<TMP_Text>();
         WordleManager = FindObjectOfType<WordleManager>();
+
+        DefaultPosition = transform.GetComponent<RectTransform>().anchoredPosition;
 
         _defaultColour = WordleManager.DefaultColour; 
         _correctColour = WordleManager.CorrectColour;
