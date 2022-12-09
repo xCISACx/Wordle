@@ -5237,13 +5237,10 @@ MonoBehaviour:
   PunchForce: {x: 0, y: 5, z: 0}
   InvalidPunchForce: {x: 0, y: 10, z: 0}
   PunchDuration: 0.5
-  InvalidPunchDuration: 0.1
+  InvalidPunchDuration: 0.3
   _solution: MUSHY
   _answer: 
   _wordLength: 0
-  _allowedWordsList: []
-  _possibleWordsList: []
-  _guessedLettersList: []
   _uiRows:
   - {fileID: 311940194}
   - {fileID: 817785034}

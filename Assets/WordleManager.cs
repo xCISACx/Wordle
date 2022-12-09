@@ -27,8 +27,8 @@ public class WordleManager : MonoBehaviour
 	[SerializeField] private string _solution;
 	[SerializeField] private string _answer;
 	[SerializeField] private int _wordLength;
-	[SerializeField] private HashSet<string> _possibleWordsHashSet = new HashSet<string>();
-	[SerializeField] private HashSet<string> _allowedWordsHashSet = new HashSet<string>();
+	private HashSet<string> _possibleWordsHashSet = new HashSet<string>();
+	private HashSet<string> _allowedWordsHashSet = new HashSet<string>();
 	[SerializeField] private List<CharContainer> _uiRows;
 	[SerializeField] private List<Char> _uiColumns;
 
@@ -50,8 +50,8 @@ public class WordleManager : MonoBehaviour
 		KeyCode.X, KeyCode.Y, KeyCode.Z
 	};
 
-	[SerializeField] private GameObject _currentUIRow;
-    [SerializeField] private GameObject _currentUIColumn;
+	[SerializeField] private CharContainer _currentUIRow;
+    [SerializeField] private Char _currentUIColumn;
     
     [Header("Game Over Variables")]
 
@@ -81,8 +81,11 @@ public class WordleManager : MonoBehaviour
 	    
 	    PickRandomWord();
 	    
-	    _currentUIRow = _uiRows[_currentRound].gameObject;
-	    _currentUIColumn = _uiColumns[_currentChar].gameObject;
+	    _uiRows = GetComponentsInChildren<CharContainer>().ToList();
+	    _uiColumns = GetComponentsInChildren<Char>().ToList();
+	    
+	    _currentUIRow = _uiRows[_currentRound];
+	    _currentUIColumn = _uiColumns[_currentChar];
 
 	    InputManager = GetComponent<InputManager>();
 	    
@@ -112,6 +115,8 @@ public class WordleManager : MonoBehaviour
 	    {
 		    var key = ReadKeyInput();
 
+		    // System.Char.IsLetter(key.ToString(), 0) does not work since it prints "Mouse" when the mouse is clicked
+		    
 		    if (Input.anyKeyDown && AcceptedKeys.Contains(key))
 		    {
 			    TypeKey(key.ToString());
@@ -146,7 +151,7 @@ public class WordleManager : MonoBehaviour
 		    _currentChar = Mathf.Clamp(_currentChar, 0, 4);
 
 		    var chars = _currentUIRow.GetComponentsInChildren<Char>();
-		    _currentUIColumn = chars[_currentChar].gameObject;
+		    _currentUIColumn = chars[_currentChar];
 		    
 		    _currentUIColumn.GetComponentInChildren<TMP_Text>().text = "";
 		    
@@ -175,7 +180,7 @@ public class WordleManager : MonoBehaviour
 		    var s = key;
 			_inputString = s;
 			
-			_currentUIColumn = chars[_currentChar].gameObject;
+			_currentUIColumn = chars[_currentChar];
 
 			_currentUIColumn.GetComponentInChildren<TMP_Text>().text = s;
 
@@ -206,169 +211,280 @@ public class WordleManager : MonoBehaviour
 
     public void CheckAnswer()
     {
-	    if (_allowedWordsHashSet.Contains(_answer))
+	    if (!_allowedWordsHashSet.Contains(_answer))
 	    {
 		    //Debug.Log("valid answer");
-		    
-		    var correctCount = 0;
+		    return;
+	    }
 
-		    UpdateFrequencyDictionary(_guessLetterFrequencyDictionary, _answer);
+	    int correctCount = 0;
 
-		    if (_answer.Length == 5)
+	    UpdateFrequencyDictionary(_guessLetterFrequencyDictionary, _answer);
+
+	    if (_answer.Length == 5)
+	    {
+		    _remaining = _answer;
+
+		    for (int i = 0; i < _answer.Length; i++)
 		    {
-			    _remaining = _answer;
+			    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[i];
 			    
-			    for (int i = 0; i < _answer.Length; i++)
+			    //get keyboard letter to light up
+
+			    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(_answer, i);
+			    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
+			    
+			    //Debug.Log(currentKeyboardLetter);
+
+			    Char[] chars = _currentUIRow.GetComponentsInChildren<Char>();
+			    
+			    _currentUIColumn = chars[i];
+
+			    PunchTarget(chars[i].transform, new Vector3(0, 3f, 0), PunchDuration);
+			    
+			    // if the current letter matches the position of the same letter in the solution
+			    
+			    if (LetterIsInRightPlace(i, currentKeyboardKey))
 			    {
-				    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[i].gameObject;
-				    
-				    //get keyboard letter to light up
-
-				    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(_answer, i);
-				    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
-				    
-				    //Debug.Log(currentKeyboardLetter);
-
-				    var chars = _currentUIRow.GetComponentsInChildren<Char>();
-				    
-				    _currentUIColumn = chars[i].gameObject;
-
-				    PunchTarget(chars[i].transform, new Vector3(0, 3f, 0), PunchDuration);
-				    
-				    // if the current letter matches the position of the same letter in the solution
-
-				    if (_answer[i].ToString() == _solution[i].ToString())
-				    {
-					    currentKeyboardKey.state = KeyboardKey.tileState.Correct;
-					    
-					    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Correct;
-
-					    _remaining = _remaining.Remove(i, 1);
-					    _remaining = _remaining.Insert(i, " ");
-					    
-					    correctCount++;
-
-					    //Debug.Log("green " + i);
-				    }
-
-				    // if the current letter does not match the position of the same letter in the solution and does not exist in the solution
-				    
-				    else if (!_solution.Contains(_answer[i].ToString()))
-				    {
-					    currentKeyboardKey.state = KeyboardKey.tileState.Incorrect;
-					    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Incorrect;
-					    
-					    //Debug.Log("grey " + i);
-				    }
+				    correctCount++;
+				    Debug.Log(correctCount);
 			    }
 
-			    bool multipleCount = false;
-			    
-			    for (int j = 0; j < _answer.Length; j++)
+			    // if the current letter does not match the position of the same letter in the solution and does not exist in the solution
+
+			    else if (LetterIsNotInSolution(i, currentKeyboardKey))
 			    {
-				    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[j].gameObject;
+				    currentKeyboardKey.state = KeyboardKey.tileState.Incorrect;
+				    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Incorrect;
+
+				    //Debug.Log("grey " + i);
+			    }
+
+			    /*else if (_answer[i].ToString() == _solution[i].ToString())
+			    {
+				    currentKeyboardKey.state = KeyboardKey.tileState.Correct;
 				    
-				    //get keyboard letter to light up
+				    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Correct;
 
-				    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(_answer, j);
-				    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
+				    _remaining = _remaining.Remove(i, 1);
+				    _remaining = _remaining.Insert(i, " ");
+				    
+				    correctCount++;
 
-				    Char currentChar = _currentUIRow.GetComponentsInChildren<Char>()[j];
+				    //Debug.Log("green " + i);
+			    }*/
 
-				    if (currentChar.State != Char.TileState.Correct && currentChar.State != Char.TileState.Incorrect)
+			    // if the current letter does not match the position of the same letter in the solution and does not exist in the solution
+			    
+			    /*else if (!_solution.Contains(_answer[i].ToString()))
+			    {
+				    currentKeyboardKey.state = KeyboardKey.tileState.Incorrect;
+				    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Incorrect;
+				    
+				    //Debug.Log("grey " + i);
+			    }*/
+		    }
+
+		    bool multipleCount = false;
+		    
+		    for (int j = 0; j < _answer.Length; j++)
+		    {
+			    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[j];
+			    
+			    //get keyboard letter to light up
+
+			    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(_answer, j);
+			    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
+
+			    Char currentChar = _currentUIRow.GetComponentsInChildren<Char>()[j];
+
+			    if (currentChar.State != Char.TileState.Correct && currentChar.State != Char.TileState.Incorrect)
+			    {
+				    if (!_remaining.Contains(_answer[j]))
 				    {
-					    if (_remaining.Contains(_answer[j]))
+					    currentChar.State = Char.TileState.Incorrect;
+
+					    //Debug.Log("grey LAST " + j);
+					    return;
+				    }
+				    
+				    // if the solution only has one instance of the letter and the guess has two or more:
+				    // mark the first as wrong place and the rest incorrect
+
+				    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] < 2 && _guessLetterFrequencyDictionary[_answer[j].ToString()] > 1 && !multipleCount)
+				    {
+					    int index = _remaining.IndexOf(_answer[j]);
+					    _remaining = _remaining.Remove(index, 1);
+					    _remaining = _remaining.Insert(index, " ");
+					    currentChar.State = Char.TileState.WrongPlace;
+					    
+					    //Debug.Log("yellow " + j);
+					    
+					    multipleCount = true;
+				    }
+				    else
+				    {
+					    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] >=
+					             _guessLetterFrequencyDictionary[_answer[j].ToString()])
 					    {
-						    // if the solution only has one instance of the letter and the guess has two or more:
-						    // mark the first as wrong place and the rest incorrect
-
-						    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] < 2 && _guessLetterFrequencyDictionary[_answer[j].ToString()] > 1 && !multipleCount)
-						    {
-							    int index = _remaining.IndexOf(_answer[j]);
-							    _remaining = _remaining.Remove(index, 1);
-							    _remaining = _remaining.Insert(index, " ");
-							    currentChar.State = Char.TileState.WrongPlace;
-							    
-							    //Debug.Log("yellow " + j);
-							    
-							    multipleCount = true;
-						    }
-						    else
-						    {
-							    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] >=
-							             _guessLetterFrequencyDictionary[_answer[j].ToString()])
-							    {
-								    currentChar.State = Char.TileState.WrongPlace;
-								    
-								    //Debug.Log("YELLOW LAST " + j);
-							    }
-							    else
-							    {
-								    currentChar.State = Char.TileState.Incorrect;
-
-								    //Debug.Log("grey LAST " + j);   
-							    }
-						    }
+						    currentChar.State = Char.TileState.WrongPlace;
 						    
-						    // check how many of a letter is in the answer and guess that have been marked as correct
-
-						    if (_guessLetterFrequencyDictionary[_answer[j].ToString()] > _solutionLetterFrequencyDictionary[_answer[j].ToString()])
-						    {
-							    for (int i = 0; i < _answer.Length; i++)
-							    {
-								    var newCurrentCharI = _currentUIRow.GetComponentsInChildren<Char>()[i];
-								    var newCurrentCharJ = _currentUIRow.GetComponentsInChildren<Char>()[j];
-
-								    if (newCurrentCharI.State == Char.TileState.Correct && _answer[i] == _answer[j])
-								    {
-									    // we already have an instance of that letter that is correct, so mark all others as incorrect
-									    newCurrentCharJ.State = Char.TileState.Incorrect;
-									    
-									    //Debug.Log("There's already another instance of " + _answer[j] + " that is in the right place so all others are incorrect");
-								    }
-							    }
-						    }
-
-						    if (currentKeyboardKey.state != KeyboardKey.tileState.Correct)
-						    {
-							    currentKeyboardKey.state = KeyboardKey.tileState.WrongPlace;
-
-							    //Debug.Log("Making keyboard " + _answer[j] + " YELLOW since it's not green");
-						    }
+						    //Debug.Log("YELLOW LAST " + j);
 					    }
 					    else
 					    {
 						    currentChar.State = Char.TileState.Incorrect;
 
-						    //Debug.Log("grey LAST " + j);
+						    //Debug.Log("grey LAST " + j);   
 					    }
 				    }
+				    
+				    // check how many of a letter are in the answer and guess that have been marked as correct
+
+				    if (_guessLetterFrequencyDictionary[_answer[j].ToString()] > _solutionLetterFrequencyDictionary[_answer[j].ToString()])
+				    {
+					    for (int i = 0; i < _answer.Length; i++)
+					    {
+						    Char newCurrentCharI = _currentUIRow.GetComponentsInChildren<Char>()[i];
+						    Char newCurrentCharJ = _currentUIRow.GetComponentsInChildren<Char>()[j];
+
+						    if (newCurrentCharI.State == Char.TileState.Correct && _answer[i] == _answer[j])
+						    {
+							    // we already have an instance of that letter that is correct, so mark all others as incorrect
+							    newCurrentCharJ.State = Char.TileState.Incorrect;
+							    
+							    //Debug.Log("There's already another instance of " + _answer[j] + " that is in the right place so all others are incorrect");
+						    }
+					    }
+				    }
+
+				    if (currentKeyboardKey.state != KeyboardKey.tileState.Correct)
+				    {
+					    currentKeyboardKey.state = KeyboardKey.tileState.WrongPlace;
+
+					    //Debug.Log("Making keyboard " + _answer[j] + " YELLOW since it's not green");
+				    }
+				    
+				    /*if (_remaining.Contains(_answer[j]))
+				    {
+					    // if the solution only has one instance of the letter and the guess has two or more:
+					    // mark the first as wrong place and the rest incorrect
+
+					    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] < 2 && _guessLetterFrequencyDictionary[_answer[j].ToString()] > 1 && !multipleCount)
+					    {
+						    int index = _remaining.IndexOf(_answer[j]);
+						    _remaining = _remaining.Remove(index, 1);
+						    _remaining = _remaining.Insert(index, " ");
+						    currentChar.State = Char.TileState.WrongPlace;
+						    
+						    //Debug.Log("yellow " + j);
+						    
+						    multipleCount = true;
+					    }
+					    else
+					    {
+						    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] >=
+						             _guessLetterFrequencyDictionary[_answer[j].ToString()])
+						    {
+							    currentChar.State = Char.TileState.WrongPlace;
+							    
+							    //Debug.Log("YELLOW LAST " + j);
+						    }
+						    else
+						    {
+							    currentChar.State = Char.TileState.Incorrect;
+
+							    //Debug.Log("grey LAST " + j);   
+						    }
+					    }
+					    
+					    // check how many of a letter is in the answer and guess that have been marked as correct
+
+					    if (_guessLetterFrequencyDictionary[_answer[j].ToString()] > _solutionLetterFrequencyDictionary[_answer[j].ToString()])
+					    {
+						    for (int i = 0; i < _answer.Length; i++)
+						    {
+							    Char newCurrentCharI = _currentUIRow.GetComponentsInChildren<Char>()[i];
+							    Char newCurrentCharJ = _currentUIRow.GetComponentsInChildren<Char>()[j];
+
+							    if (newCurrentCharI.State == Char.TileState.Correct && _answer[i] == _answer[j])
+							    {
+								    // we already have an instance of that letter that is correct, so mark all others as incorrect
+								    newCurrentCharJ.State = Char.TileState.Incorrect;
+								    
+								    //Debug.Log("There's already another instance of " + _answer[j] + " that is in the right place so all others are incorrect");
+							    }
+						    }
+					    }
+
+					    if (currentKeyboardKey.state != KeyboardKey.tileState.Correct)
+					    {
+						    currentKeyboardKey.state = KeyboardKey.tileState.WrongPlace;
+
+						    //Debug.Log("Making keyboard " + _answer[j] + " YELLOW since it's not green");
+					    }*/
+				    /*}
+				    else
+				    {
+					    currentChar.State = Char.TileState.Incorrect;
+
+					    //Debug.Log("grey LAST " + j);
+				    }*/
 			    }
 		    }
+	    }
 
-		    //Debug.Log("correct letters: " + correctCount);
+	    //Debug.Log("correct letters: " + correctCount);
+	    
+	    CheckForWinOrLoss(correctCount);
+    }
+    
+    private bool LetterIsInRightPlace(int i, KeyboardKey currentKeyboardKey)
+    {
+	    if (_answer[i].ToString() == _solution[i].ToString())
+	    {
+		    currentKeyboardKey.state = KeyboardKey.tileState.Correct;
+				    
+		    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Correct;
 
-		    if (correctCount == 5)
+		    _remaining = _remaining.Remove(i, 1);
+		    _remaining = _remaining.Insert(i, " ");
+		    
+		    return true;
+
+		    //Debug.Log("green " + i);
+	    }
+
+	    return false;
+    }
+
+    private bool LetterIsNotInSolution(int i, KeyboardKey currentKeyboardKey)
+    {
+	    return (!_solution.Contains(_answer[i].ToString()));
+    }
+    
+    private void CheckForWinOrLoss(int correctCount)
+    {
+	    if (correctCount == 5)
+	    {
+		    //Debug.Log("Winner");
+		    _winCanvas.SetActive(true);
+		    _solutionTextWin.text = _solution.ToUpper();
+		    _attemptsText.text = (_currentRound + 1) + " attempt(s)";
+	    }
+	    else
+	    {
+		    if (_currentRound < _maxRounds)
 		    {
-			    //Debug.Log("Winner");
-			    _winCanvas.SetActive(true);
-			    _solutionTextWin.text = _solution.ToUpper();
-			    _attemptsText.text = (_currentRound + 1) + " attempt(s)";
+			    _currentRound++;
+			    UpdateRound();   
 		    }
 		    else
 		    {
-			    if (_currentRound < _maxRounds)
-			    {
-				    _currentRound++;
-				    UpdateRound();   
-			    }
-			    else
-			    {
-				    //Debug.Log("Loser");
-				    _defeatCanvas.SetActive(true);
-				    _solutionTextLose.text = _solution.ToUpper();
-				    //show defeat canvas
-			    }
+			    //Debug.Log("Loser");
+			    _defeatCanvas.SetActive(true);
+			    _solutionTextLose.text = _solution.ToUpper();
+			    //show defeat canvas
 		    }
 	    }
     }
@@ -397,29 +513,29 @@ public class WordleManager : MonoBehaviour
 	    _answer = "";
 	    _wordLength = 0;
 	    _currentChar = 0;
-	    _currentUIRow = _uiRows[_currentRound].gameObject;
-	    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[_currentChar].gameObject;
+	    _currentUIRow = _uiRows[_currentRound];
+	    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[_currentChar];
     }
 
     void AddWordsToHashSet(string path, HashSet<string> set)
     {
-	    var file = Resources.Load<TextAsset>(path);
+	    TextAsset file = Resources.Load<TextAsset>(path);
 
-	    var fileContent = file.text;
+	    string fileContent = file.text;
 
 #if UNITY_WEBGL
 
-	    var fileWords = fileContent.Split("\r\n");
+	    string[] fileWords = fileContent.Split("\r\n");
 	    
 #endif
 
 #if !UNITY_WEBGL
 	
-		  var fileWords = fileContent.Split(Environment.NewLine);
+		  string[] fileWords = fileContent.Split(Environment.NewLine);
 	    
 #endif
 
-	    foreach (var word in fileWords)
+	    foreach (string word in fileWords)
 	    {
 		    set.Add(word.ToUpper());
 	    }
@@ -427,7 +543,7 @@ public class WordleManager : MonoBehaviour
 
     void PickRandomWord()
     {
-	    var num = UnityEngine.Random.Range(0, _possibleWordsHashSet.Count - 1);
+	    int num = UnityEngine.Random.Range(0, _possibleWordsHashSet.Count - 1);
 	    _solution = _possibleWordsHashSet.ElementAt(num);
     }
 
@@ -452,12 +568,12 @@ public class WordleManager : MonoBehaviour
     {
 	    _solutionLetterFrequencyDictionary.Clear();
 
-	    foreach (var key in InputManager.KeyboardKeys)
+	    foreach (string key in InputManager.KeyboardKeys)
 	    {
 		    _solutionLetterFrequencyDictionary.Add(key, 0);
 	    }
 
-	    foreach (var pair in _solutionLetterFrequencyDictionary)
+	    foreach (KeyValuePair<string, int> pair in _solutionLetterFrequencyDictionary)
 	    {
 		    //Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
 	    }
@@ -470,18 +586,18 @@ public class WordleManager : MonoBehaviour
     {
 	    _solutionLetterFrequencyDictionary.Clear();
 
-	    foreach (var key in InputManager.KeyboardKeys)
+	    foreach (string key in InputManager.KeyboardKeys)
 	    {
 		    _solutionLetterFrequencyDictionary.Add(key, 0);
 	    }
 
-	    foreach (var letter in _solution)
+	    foreach (char letter in _solution)
 	    {
 		    //Debug.Log( _solutionLetterFrequencyDictionary[letter.ToString()]);
 		    _solutionLetterFrequencyDictionary[letter.ToString()] += 1;
 	    }
 
-	    foreach (var pair in _solutionLetterFrequencyDictionary)
+	    foreach (KeyValuePair<string, int> pair in _solutionLetterFrequencyDictionary)
 	    {
 		    //Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
 	    }
@@ -493,18 +609,18 @@ public class WordleManager : MonoBehaviour
     {
 	    dictionary.Clear();
 
-	    foreach (var key in InputManager.KeyboardKeys)
+	    foreach (string key in InputManager.KeyboardKeys)
 	    {
 		    dictionary.Add(key, 0);
 	    }
 
-	    foreach (var letter in word)
+	    foreach (char letter in word)
 	    {
 		    //Debug.Log( dictionary[letter.ToString()]);
 		    dictionary[letter.ToString()] += 1;
 	    }
 
-	    foreach (var pair in dictionary)
+	    foreach (KeyValuePair<string, int> pair in dictionary)
 	    {
 		    //Debug.Log("Letter: " + pair.Key + ", Frequency: " + pair.Value);
 	    }

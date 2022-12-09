@@ -32,14 +32,17 @@ public class InputManager : MonoBehaviour
         
     }
     
+    // This method attributes a letter to each keyboard key so that letter can be typed when it's clicked on
+    
     [ContextMenu("Set Keyboard Keys")]
     public void SetKeyBoardKeys()
     {
-        var keyboardKeys = Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Typeable).ToList();
+        var keyboardKeys = Keyboard.GetComponentsInChildren<KeyboardKey>();
+        var typeableKeyboardKeys = Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Typeable).ToList();
 
-        for (int i = 0; i < keyboardKeys.Count; i++)
+        for (int i = 0; i < typeableKeyboardKeys.Count; i++)
         {
-            var key = keyboardKeys[i];
+            var key = typeableKeyboardKeys[i];
 		    
             key.Key = KeyboardKeys[i];
 			    
@@ -51,10 +54,10 @@ public class InputManager : MonoBehaviour
             }
         }
 
-        var backSpaceKey = Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == "Backspace").ToList();
+        var backSpaceKey = keyboardKeys.Where(x => x.Key == "Backspace").ToList();
         backSpaceKey[0].GetComponentInChildren<TMP_Text>().text = "<-";
 	    
-        var enterKey = Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == "Enter").ToList();
+        var enterKey = keyboardKeys.Where(x => x.Key == "Enter").ToList();
         enterKey[0].GetComponentInChildren<TMP_Text>().text = "Go";
     }
 }
