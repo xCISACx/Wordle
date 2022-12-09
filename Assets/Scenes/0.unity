@@ -5239,8 +5239,8 @@ MonoBehaviour:
   PunchDuration: 0.5
   InvalidPunchDuration: 0.3
   _solution: MUSHY
-  _answer: 
-  _wordLength: 0
+  _currentUIRow: {fileID: 0}
+  _currentUIColumn: {fileID: 0}
   _uiRows:
   - {fileID: 311940194}
   - {fileID: 817785034}
@@ -5279,14 +5279,12 @@ MonoBehaviour:
   - {fileID: 1297400340}
   - {fileID: 1768221036}
   - {fileID: 1103000810}
-  _inputString: 
+  _answer: 
+  _answerLength: 0
+  _currentChar: 0
   _currentRound: 0
   _maxRounds: 5
-  _currentChar: 0
   _remaining: 
-  AcceptedKeys: 6100000062000000630000006400000065000000660000006700000068000000690000006a0000006b0000006c0000006d0000006e0000006f000000700000007100000072000000730000007400000075000000760000007700000078000000790000007a000000
-  _currentUIRow: {fileID: 0}
-  _currentUIColumn: {fileID: 0}
   _defeatCanvas: {fileID: 1460465900}
   _solutionTextWin: {fileID: 420591484}
   _solutionTextLose: {fileID: 134281543}
@@ -5304,7 +5302,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1e94484a1baff54cbd6b678a372a553, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WordleManager: {fileID: 0}
   Keyboard: {fileID: 1732173877}
+  _inputString: 
+  AcceptedKeys: 6100000062000000630000006400000065000000660000006700000068000000690000006a0000006b0000006c0000006d0000006e0000006f000000700000007100000072000000730000007400000075000000760000007700000078000000790000007a000000
   KeyboardKeys:
   - Q
   - W

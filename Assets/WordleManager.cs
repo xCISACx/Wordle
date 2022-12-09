@@ -22,38 +22,96 @@ public class WordleManager : MonoBehaviour
 	public float PunchDuration = 0.5f;
 	public float InvalidPunchDuration = 0.1f;
 
-	[Header("Match Variables")]
+	[Header("Match Variables")] 
 	
 	[SerializeField] private string _solution;
-	[SerializeField] private string _answer;
-	[SerializeField] private int _answerLength;
-	private int _requiredAnswerLength = 5;
-	private HashSet<string> _possibleWordsHashSet = new HashSet<string>();
-	private HashSet<string> _allowedWordsHashSet = new HashSet<string>();
-	[SerializeField] private List<CharContainer> _uiRows;
-	[SerializeField] private List<Char> _uiColumns;
+	public string Solution => _solution;
 
-	[SerializeField] private string _inputString = "";
-	[SerializeField] private int _currentRound;
-	[SerializeField] private int _maxRounds = 5;
+	public int RequiredAnswerLength => _requiredAnswerLength;
+	private int _requiredAnswerLength = 5;
+	
+	public HashSet<string> PossibleWordsHashSet => _possibleWordsHashSet;
+	private HashSet<string> _possibleWordsHashSet = new HashSet<string>();
+	
+	public HashSet<string> AllowedWordsHashSet => _allowedWordsHashSet;
+	private HashSet<string> _allowedWordsHashSet = new HashSet<string>();
+	
+	public CharContainer CurrentUIRow
+	{
+		get
+		{
+			return _currentUIRow;
+		}
+
+		set => _currentUIRow = value;
+	}
+	
+	[SerializeField] private CharContainer _currentUIRow;
+	
+	
+	public Char CurrentUIColumn
+	{
+		get
+		{
+			return _currentUIColumn;
+		}
+
+		set => _currentUIColumn = value;
+	}
+	
+	[SerializeField] private Char _currentUIColumn;
+    
+	public List<CharContainer> UIRows => _uiRows;
+	[SerializeField] private List<CharContainer> _uiRows;
+	
+	public List<Char> UIColumns => _uiColumns;
+	[SerializeField] private List<Char> _uiColumns;
+	public string Answer
+	{
+		get
+		{
+			return _answer;
+		}
+
+		set => _answer = value;
+	}
+	
+	[SerializeField] private string _answer;
+	
+	public int AnswerLength
+	{
+		get
+		{
+			return _answerLength;
+		}
+
+		set => _answerLength = value;
+	}
+
+	[SerializeField] private int _answerLength;
+	
+	public int CurrentChar
+	{
+		get
+		{
+			return _currentChar;
+		}
+
+		set => _currentChar = value;
+	}
+	
 	[SerializeField] private int _currentChar;
+	
+	public int CurrentRound => _currentRound;
+	[SerializeField] private int _currentRound;
+	
+	[SerializeField] private int _maxRounds = 5;
+	
+	
 	[SerializeField] private string _remaining;
     private readonly Dictionary<string, int> _solutionLetterFrequencyDictionary = new Dictionary<string, int>();
     private readonly Dictionary<string, int> _guessLetterFrequencyDictionary = new Dictionary<string, int>();
-	
-	[Header("Input Variables")]
 
-	public KeyCode[] AcceptedKeys =
-	{
-		KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.D, KeyCode.E, KeyCode.F, KeyCode.G, KeyCode.H, KeyCode.I, KeyCode.J,
-		KeyCode.K, KeyCode.L, KeyCode.M, KeyCode.N, KeyCode.O, KeyCode.P, KeyCode.Q, KeyCode.R, KeyCode.S, KeyCode.T,
-		KeyCode.U, KeyCode.V, KeyCode.W,
-		KeyCode.X, KeyCode.Y, KeyCode.Z
-	};
-
-	[SerializeField] private CharContainer _currentUIRow;
-    [SerializeField] private Char _currentUIColumn;
-    
     [Header("Game Over Variables")]
 
     [SerializeField] private GameObject _defeatCanvas; 
@@ -66,6 +124,8 @@ public class WordleManager : MonoBehaviour
     
     private void Awake()
     {
+	    InputManager = GetComponent<InputManager>();
+	    
 	    var seed = DateTime.Now.Ticks;
 	    
 	    UnityEngine.Random.InitState((int) seed);
@@ -77,19 +137,17 @@ public class WordleManager : MonoBehaviour
 	    
 	    AddWordsToHashSet("PossibleWords", _possibleWordsHashSet);
 	    
-	    //Debug.Log(_possibleWordsHashSet.Count);
-	    //Debug.Log(_allowedWordsHashSet.Count);
-	    
-	    PickRandomWord();
+	    Debug.Log(PossibleWordsHashSet.Count);
+	    Debug.Log(AllowedWordsHashSet.Count);
 	    
 	    _uiRows = GetComponentsInChildren<CharContainer>().ToList();
 	    _uiColumns = GetComponentsInChildren<Char>().ToList();
 	    
 	    _currentUIRow = _uiRows[_currentRound];
 	    _currentUIColumn = _uiColumns[_currentChar];
-
-	    InputManager = GetComponent<InputManager>();
 	    
+	    PickRandomWord();
+
 	    InputManager.SetKeyBoardKeys();
 	    
 		UpdateFrequencyDictionary(_guessLetterFrequencyDictionary, _answer);
@@ -98,69 +156,27 @@ public class WordleManager : MonoBehaviour
 
     private void InitialiseValues()
     {
-		_inputString = "";
-		_answerLength = 0;
+	    _answerLength = 0;
 		_currentRound = 0;
 		_currentChar = 0;
     }
-
-    private void OnValidate()
+    
+    public void UpdateRound()
     {
-	    _uiRows = GetComponentsInChildren<CharContainer>().ToList();
-	    _uiColumns = GetComponentsInChildren<Char>().ToList();
+	    InputManager.InputString = "";
+	    _answer = "";
+	    AnswerLength = 0;
+	    _currentChar = 0;
+	    _currentUIRow = _uiRows[_currentRound];
+	    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[_currentChar];
     }
 
     private void Update()
     {
-	    if (_answerLength > -1 && _answerLength <= 4)
-	    {
-		    var key = ReadKeyInput();
-
-		    // System.Char.IsLetter(key.ToString(), 0) does not work since it prints "Mouse" when the mouse is clicked
-		    
-		    if (Input.anyKeyDown && AcceptedKeys.Contains(key))
-		    {
-			    TypeKey(key.ToString());
-		    }
-	    }
-
-	    if (Input.GetKeyDown(KeyCode.Backspace))
-	    {
-		    DeleteLastChar();
-	    }
-
-	    if (Input.GetKeyDown(KeyCode.Return))
-	    {
-		    if (_solution != "")
-		    {
-			    CheckAnswer();   
-		    }
-		    else
-		    {
-			    //Debug.Log("no solution");
-		    }
-	    }
+	    
     }
-
-    public void DeleteLastChar()
-    {
-	    if (_answer.Length >= 1)
-	    {
-		    _answer = _answer.Substring(0, _answer.Length - 1);
-		    _currentChar--;
-		    _answerLength--;
-		    _currentChar = Mathf.Clamp(_currentChar, 0, 4);
-
-		    var chars = _currentUIRow.GetComponentsInChildren<Char>();
-		    _currentUIColumn = chars[_currentChar];
-		    
-		    _currentUIColumn.GetComponentInChildren<TMP_Text>().text = "";
-		    
-		    SetTileColours(chars, DefaultColour);
-	    }
-    }
-
-    void SetTileColours(Char[] tiles, Color color)
+    
+    public void SetTileColours(Char[] tiles, Color color)
     {
 	    for (int i = 0; i < 5; i++)
 	    {
@@ -169,44 +185,6 @@ public class WordleManager : MonoBehaviour
 			    
 		    currentPanelImage.color = color;
 		    //Debug.Log("reset tile " + i + "'s colour");
-	    }
-    }
-
-    public void TypeKey(string key)
-    {
-	    var chars = _currentUIRow.GetComponentsInChildren<Char>();
-	    
-	    if (_answer.Length <= 4)
-	    {
-		    var s = key;
-			_inputString = s;
-			
-			_currentUIColumn = chars[_currentChar];
-
-			_currentUIColumn.GetComponentInChildren<TMP_Text>().text = s;
-
-		    _answer += _inputString;
-		    _currentChar++;
-		    _currentChar = Mathf.Clamp(_currentChar, 0, 5);
-		    _answerLength++;
-		    _inputString = "";   
-		    
-		    PunchTarget(_currentUIColumn.transform, PunchForce, PunchDuration);
-	    }
-
-	    if (!_allowedWordsHashSet.Contains(_answer))
-	    {
-		    for (int i = 0; i < _answer.Length; i++)
-		    {
-			    if (_answer.Length == _requiredAnswerLength)
-			    {
-				    var currentPanel = chars[i].gameObject;
-				    
-				    ShakeTarget(currentPanel.transform, InvalidPunchForce, InvalidPunchDuration);
-				    
-				    SetTileColours(chars, Color.red);
-			    }
-		    }
 	    }
     }
 
@@ -277,16 +255,16 @@ public class WordleManager : MonoBehaviour
 		    
 		    //get keyboard letter to light up
 
-		    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(_answer, j);
+		    GameObject currentKeyboardLetter = GetCurrentKeyboardLetter(Answer, j);
 		    KeyboardKey currentKeyboardKey = currentKeyboardLetter.GetComponent<KeyboardKey>();
 
-		    Char currentChar = _currentUIRow.GetComponentsInChildren<Char>()[j];
+		    Char currentChar = CurrentUIRow.GetComponentsInChildren<Char>()[j];
 
 		    if (currentChar.State != Char.TileState.Correct && currentChar.State != Char.TileState.Incorrect)
 		    {
 			    // if the remaining letters don't contain the current answer letter being checked, mark the tile as incorrect
 			    
-			    if (!_remaining.Contains(_answer[j]))
+			    if (!_remaining.Contains(Answer[j]))
 			    {
 				    currentChar.State = Char.TileState.Incorrect;
 
@@ -298,9 +276,9 @@ public class WordleManager : MonoBehaviour
 			    // mark the first as wrong place and the rest incorrect so the player won't wrongly
 			    // think there are 2 of the same letter in the solution
 
-			    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] < 2 && _guessLetterFrequencyDictionary[_answer[j].ToString()] > 1 && !multipleCount)
+			    if (_solutionLetterFrequencyDictionary[Answer[j].ToString()] < 2 && _guessLetterFrequencyDictionary[_answer[j].ToString()] > 1 && !multipleCount)
 			    {
-				    int index = _remaining.IndexOf(_answer[j]);
+				    int index = _remaining.IndexOf(Answer[j]);
 				    
 				    _remaining = _remaining.Remove(index, 1);
 				    _remaining = _remaining.Insert(index, " ");
@@ -315,7 +293,7 @@ public class WordleManager : MonoBehaviour
 			    {
 				    // if the solution has the same or higher frequency of the letter as the guess, mark the tile as wrong place
 				    
-				    if (_solutionLetterFrequencyDictionary[_answer[j].ToString()] >= _guessLetterFrequencyDictionary[_answer[j].ToString()])
+				    if (_solutionLetterFrequencyDictionary[Answer[j].ToString()] >= _guessLetterFrequencyDictionary[Answer[j].ToString()])
 				    {
 					    currentChar.State = Char.TileState.WrongPlace;
 					    
@@ -336,18 +314,18 @@ public class WordleManager : MonoBehaviour
 			    // check how many of a letter are in the answer and guess that have been marked as correct
 			    // this way we can mark the rest as incorrect since only one instance of that letter is in the solution
 
-			    if (_guessLetterFrequencyDictionary[_answer[j].ToString()] > _solutionLetterFrequencyDictionary[_answer[j].ToString()])
+			    if (_guessLetterFrequencyDictionary[Answer[j].ToString()] > _solutionLetterFrequencyDictionary[Answer[j].ToString()])
 			    {
-				    for (int i = 0; i < _answer.Length; i++)
+				    for (int i = 0; i < Answer.Length; i++)
 				    {
-					    Char[] uiColumns = _currentUIRow.GetComponentsInChildren<Char>();
+					    Char[] uiColumns = CurrentUIRow.GetComponentsInChildren<Char>();
 					    
 					    Char newCurrentCharI = uiColumns[i];
 					    Char newCurrentCharJ = uiColumns[j];
 					    
 					    // if the first pass's answer has a correct letter already and the letter is the same for both passes
 
-					    if (newCurrentCharI.State == Char.TileState.Correct && _answer[i] == _answer[j])
+					    if (newCurrentCharI.State == Char.TileState.Correct && Answer[i] == Answer[j])
 					    {
 						    // we already have an instance of that letter that is correct, so mark all others as incorrect
 						    
@@ -376,11 +354,11 @@ public class WordleManager : MonoBehaviour
     
     private bool LetterIsInRightPlace(int i, KeyboardKey currentKeyboardKey)
     {
-	    if (_answer[i].ToString() == _solution[i].ToString())
+	    if (Answer[i].ToString() == _solution[i].ToString())
 	    {
 		    currentKeyboardKey.state = KeyboardKey.tileState.Correct;
 				    
-		    _currentUIColumn.GetComponent<Char>().State = Char.TileState.Correct;
+		    CurrentUIColumn.GetComponent<Char>().State = Char.TileState.Correct;
 
 		    _remaining = _remaining.Remove(i, 1);
 		    _remaining = _remaining.Insert(i, " ");
@@ -395,7 +373,7 @@ public class WordleManager : MonoBehaviour
 
     private bool LetterIsNotInSolution(int i, KeyboardKey currentKeyboardKey)
     {
-	    return (!_solution.Contains(_answer[i].ToString()));
+	    return (!_solution.Contains(Answer[i].ToString()));
     }
 
     private void CheckForWinOrLoss(int correctCount)
@@ -429,27 +407,17 @@ public class WordleManager : MonoBehaviour
 	    return InputManager.Keyboard.GetComponentsInChildren<KeyboardKey>().Where(x => x.Key == word[index].ToString()).ToList()[0].gameObject;
     }
 
-    private void PunchTarget(Transform target, Vector3 force, float duration)
+    public void PunchTarget(Transform target, Vector3 force, float duration)
     {
 	    target.DOPunchPosition(force, duration).OnComplete( () => target.DORewind());
     }
     
-    private void ShakeTarget(Transform target, Vector3 force, float duration)
+    public void ShakeTarget(Transform target, Vector3 force, float duration)
     {
 	    target.DOShakePosition(duration, force, 10, 0f)
 		    .SetRecyclable(true)
 		    .SetAutoKill(false)
 		    .OnComplete( () => target.DORewind());
-    }
-
-    void UpdateRound()
-    {
-	    _inputString = "";
-	    _answer = "";
-	    _answerLength = 0;
-	    _currentChar = 0;
-	    _currentUIRow = _uiRows[_currentRound];
-	    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[_currentChar];
     }
 
     void AddWordsToHashSet(string path, HashSet<string> set)
@@ -482,22 +450,6 @@ public class WordleManager : MonoBehaviour
 	    _solution = _possibleWordsHashSet.ElementAt(num);
     }
 
-    private KeyCode ReadKeyInput()
-    {
-        foreach (KeyCode keyValue in Enum.GetValues(typeof(KeyCode)))
-        {
-	        if (Input.GetKeyDown(keyValue))
-	        {
-		        if (keyValue != KeyCode.Return)
-		        {
-			        return keyValue;
-		        }
-	        }
-        }
-
-        return KeyCode.KeypadPeriod;
-    }
-    
     [ContextMenu("Init Solution Frequency UI")]
     void InitSolutionFrequencyDictionary()
     {

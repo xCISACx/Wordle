@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class KeyboardKey : MonoBehaviour
 {
+    public InputManager InputManager;
+    
     public enum tileState
     {
         None,
@@ -38,15 +40,16 @@ public class KeyboardKey : MonoBehaviour
         Text = GetComponentInChildren<TMP_Text>();
 
         WordleManager = FindObjectOfType<WordleManager>();
+        InputManager = FindObjectOfType<InputManager>();
         
         _defaultColour = WordleManager.DefaultColour; 
         _correctColour = WordleManager.CorrectColour;
         _wrongPlaceColour = WordleManager.WrongPlaceColour;
         _incorrectColour = WordleManager.IncorrectColour;
         
-        for (int i = 0; i < WordleManager.AcceptedKeys.Length; i++)
+        for (int i = 0; i < InputManager.AcceptedKeys.Length; i++)
         {
-            var keyString = WordleManager.AcceptedKeys[i].ToString();
+            var keyString = InputManager.AcceptedKeys[i].ToString();
             AcceptedKeysStringList.Add(keyString);
         }
     }
@@ -83,13 +86,13 @@ public class KeyboardKey : MonoBehaviour
         {
             //Debug.Log("valid key " + Key);
             
-            WordleManager.TypeKey(Key);   
+            InputManager.TypeKey(Key);   
         }
         else
         {
             if (Key == "Backspace")
             {
-                WordleManager.DeleteLastChar();
+                InputManager.DeleteLastChar();
             }
             
             if (Key == "Enter")
