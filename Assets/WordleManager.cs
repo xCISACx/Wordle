@@ -107,8 +107,7 @@ public class WordleManager : MonoBehaviour
 	
 	[SerializeField] private int _maxRounds = 5;
 	
-	
-	[SerializeField] private string _remaining;
+	[SerializeField] private string _remainingLetters;
     private readonly Dictionary<string, int> _solutionLetterFrequencyDictionary = new Dictionary<string, int>();
     private readonly Dictionary<string, int> _guessLetterFrequencyDictionary = new Dictionary<string, int>();
 
@@ -171,11 +170,6 @@ public class WordleManager : MonoBehaviour
 	    _currentUIColumn = _currentUIRow.GetComponentsInChildren<Char>()[_currentChar];
     }
 
-    private void Update()
-    {
-	    
-    }
-    
     public void SetTileColours(Char[] tiles, Color color)
     {
 	    for (int i = 0; i < 5; i++)
@@ -205,7 +199,7 @@ public class WordleManager : MonoBehaviour
 		    return;
 	    }
 
-	    _remaining = _answer;
+	    _remainingLetters = _answer;
 		    
 	    // first pass to check for correct and incorrect letters 
 
@@ -264,7 +258,7 @@ public class WordleManager : MonoBehaviour
 		    {
 			    // if the remaining letters don't contain the current answer letter being checked, mark the tile as incorrect
 			    
-			    if (!_remaining.Contains(Answer[j]))
+			    if (!_remainingLetters.Contains(Answer[j]))
 			    {
 				    currentChar.State = Char.TileState.Incorrect;
 
@@ -278,10 +272,10 @@ public class WordleManager : MonoBehaviour
 
 			    if (_solutionLetterFrequencyDictionary[Answer[j].ToString()] < 2 && _guessLetterFrequencyDictionary[_answer[j].ToString()] > 1 && !multipleCount)
 			    {
-				    int index = _remaining.IndexOf(Answer[j]);
+				    int index = _remainingLetters.IndexOf(Answer[j]);
 				    
-				    _remaining = _remaining.Remove(index, 1);
-				    _remaining = _remaining.Insert(index, " ");
+				    _remainingLetters = _remainingLetters.Remove(index, 1);
+				    _remainingLetters = _remainingLetters.Insert(index, " ");
 				    
 				    currentChar.State = Char.TileState.WrongPlace;
 				    
@@ -360,8 +354,8 @@ public class WordleManager : MonoBehaviour
 				    
 		    CurrentUIColumn.GetComponent<Char>().State = Char.TileState.Correct;
 
-		    _remaining = _remaining.Remove(i, 1);
-		    _remaining = _remaining.Insert(i, " ");
+		    _remainingLetters = _remainingLetters.Remove(i, 1);
+		    _remainingLetters = _remainingLetters.Insert(i, " ");
 		    
 		    return true;
 

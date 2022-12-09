@@ -117,8 +117,8 @@ public class InputManager : MonoBehaviour
     public void TypeKey(string key)
     {
         var chars = WordleManager.CurrentUIRow.GetComponentsInChildren<Char>();
-
-        if (WordleManager.Answer.Length < WordleManager.RequiredAnswerLength)
+	    
+        if (WordleManager.Answer.Length <= WordleManager.RequiredAnswerLength - 1)
         {
             var s = key;
             _inputString = s;
@@ -150,9 +150,6 @@ public class InputManager : MonoBehaviour
                 }
             }
         }
-        
-        Debug.Log(WordleManager.Answer);
-        Debug.Log(WordleManager.AllowedWordsHashSet.Contains(WordleManager.Answer));
     }
     
     // This method attributes a letter to each keyboard key so that letter can be typed when it's clicked on

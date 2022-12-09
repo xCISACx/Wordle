@@ -5238,7 +5238,7 @@ MonoBehaviour:
   InvalidPunchForce: {x: 0, y: 10, z: 0}
   PunchDuration: 0.5
   InvalidPunchDuration: 0.3
-  _solution: MUSHY
+  _solution: SHORN
   _currentUIRow: {fileID: 0}
   _currentUIColumn: {fileID: 0}
   _uiRows:
@@ -5284,7 +5284,7 @@ MonoBehaviour:
   _currentChar: 0
   _currentRound: 0
   _maxRounds: 5
-  _remaining: 
+  _remainingLetters: 
   _defeatCanvas: {fileID: 1460465900}
   _solutionTextWin: {fileID: 420591484}
   _solutionTextLose: {fileID: 134281543}
